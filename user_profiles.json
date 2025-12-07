@@ -1,0 +1,32 @@
+{
+  "default": {
+    "age": null,
+    "conditions": [],
+    "allergies": [],
+    "medications": [],
+    "goals": [],
+    "chat_history": [
+      {
+        "timestamp": "2025-12-07T09:36:56.456678",
+        "message": "i have leaku gut syndrome",
+        "response": "## Introduction to Leaky Gut Syndrome\nI'm so sorry to hear that you're dealing with **Leaky Gut Syndrome**. This condition can be challenging, but there are steps you can take to manage your symptoms and support your overall health.\n\n## Understanding Leaky Gut Syndrome\nLeaky Gut Syndrome is characterized by **increased intestinal permeability**, which allows toxins to enter your bloodstream. This can contribute to various issues, including **autoimmune conditions**, **allergies**, and **inflammation**.\n\n## Support and Management\nTo support your gut health and manage Leaky Gut Syndrome, consider the following:\n* **Dietary Changes**:\n\t+ Consume **bone broth**, which can help heal the gut lining\n\t+ Include **glutamine** in your diet, as it can aid in gut repair\n\t+ Take **probiotics** to promote a healthy gut microbiome\n\t+ Follow an **anti-inflammatory diet** to reduce inflammation and promote healing\n* **Lifestyle Changes**:\n\t+ Eat a diverse range of **plant foods** (aim for 30+ types per week)\n\t+ Include **fermented foods** in your daily diet\n\t+ Ensure you're getting **adequate fiber** (25-30g per day)\n\t+ **Limit processed foods and sugar**\n\t+ **Manage stress** through techniques like meditation or yoga\n\t+ Prioritize **adequate sleep** (7-9 hours per night)\n\t+ **Stay hydrated** by drinking plenty of water\n\n## Foods to Avoid\nIt's essential to avoid certain foods that can exacerbate Leaky Gut Syndrome, including:\n* **Alcohol**\n* **NSAIDs** (non-steroidal anti-inflammatory drugs)\n* **Processed foods**\n\n## Next Steps\nTo better understand your situation and provide more tailored advice, can you please tell me:\n* What symptoms are you currently experiencing?\n* Have you noticed any triggers that make your symptoms worse?\n* Are you taking any medications or supplements that may be relevant to your condition?",
+        "topic": "General Health"
+      }
+    ],
+    "prescriptions": [],
+    "lab_reports": [],
+    "settings": {
+      "theme": "light",
+      "notifications": true,
+      "data_sharing": false
+    },
+    "challenges": {
+      "active": {},
+      "completed_history": [],
+      "badges": [],
+      "points": 0
+    },
+    "preferred_language": "en",
+    "gender": "male"
+  }
+}

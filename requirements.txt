@@ -1,0 +1,12 @@
+flask
+langchain
+langchain-groq
+langchain-community
+faiss-cpu
+python-dotenv
+sentence-transformers
+numpy
+pytesseract
+Pillow
+deep-translator
+langdetect
