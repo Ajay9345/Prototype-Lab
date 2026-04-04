@@ -7,6 +7,7 @@ and self-care recommendations.
 from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 import random
+from environmental_sync import get_environmental_sync
 
 
 class WellnessGuide:
@@ -186,17 +187,21 @@ class WellnessGuide:
         tips = self.get_personalized_tips(user_profile, count=1)
         return tips[0] if tips else self.general_tips[0]
     
-    def get_proactive_alerts(self, user_profile: Optional[Dict] = None) -> List[Dict]:
+    def get_proactive_alerts(self, user_profile: Optional[Dict] = None, env_data: Optional[Dict] = None) -> List[Dict]:
         """
         Generate proactive health alerts based on user profile and history.
-        
-        Returns:
-            List of alert dictionaries with type, message, and priority
+        Includes environmental alerts if data is provided.
         """
         alerts = []
         
         if not user_profile:
             return alerts
+            
+        # Add Environmental Alerts
+        if env_data:
+            env_sync = get_environmental_sync()
+            env_alerts = env_sync.generate_alerts(env_data, user_profile)
+            alerts.extend(env_alerts)
         
         # Check medication reminders
         medications = user_profile.get('medications', [])

@@ -15,6 +15,7 @@ class UserProfile:
                  prescriptions: Optional[List[Dict]] = None,
                  lab_reports: Optional[List[Dict]] = None,
                  settings: Optional[Dict] = None,
+                 challenges: Optional[Dict] = None,
                  preferred_language: str = 'en',
                  gender: str = 'male'):
         self.age = age
@@ -27,7 +28,7 @@ class UserProfile:
         self.lab_reports = lab_reports or []
         self.preferred_language = preferred_language
         self.gender = gender
-        self.challenges = {
+        self.challenges = challenges or {
             "active": {},
             "completed_history": [],
             "badges": [],

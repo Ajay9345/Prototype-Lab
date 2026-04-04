@@ -1,20 +1,285 @@
 {
   "default": {
-    "age": null,
-    "conditions": [],
-    "allergies": [],
-    "medications": [],
-    "goals": [],
+    "age": 59,
+    "conditions": [
+      "diabetes",
+      "hypertension"
+    ],
+    "allergies": [
+      "peanut"
+    ],
+    "medications": [
+      "metformin",
+      "paracetamol"
+    ],
+    "goals": [
+      "weight gain",
+      "better sleep"
+    ],
     "chat_history": [
       {
-        "timestamp": "2025-12-07T09:36:56.456678",
-        "message": "i have leaku gut syndrome",
-        "response": "## Introduction to Leaky Gut Syndrome\nI'm so sorry to hear that you're dealing with **Leaky Gut Syndrome**. This condition can be challenging, but there are steps you can take to manage your symptoms and support your overall health.\n\n## Understanding Leaky Gut Syndrome\nLeaky Gut Syndrome is characterized by **increased intestinal permeability**, which allows toxins to enter your bloodstream. This can contribute to various issues, including **autoimmune conditions**, **allergies**, and **inflammation**.\n\n## Support and Management\nTo support your gut health and manage Leaky Gut Syndrome, consider the following:\n* **Dietary Changes**:\n\t+ Consume **bone broth**, which can help heal the gut lining\n\t+ Include **glutamine** in your diet, as it can aid in gut repair\n\t+ Take **probiotics** to promote a healthy gut microbiome\n\t+ Follow an **anti-inflammatory diet** to reduce inflammation and promote healing\n* **Lifestyle Changes**:\n\t+ Eat a diverse range of **plant foods** (aim for 30+ types per week)\n\t+ Include **fermented foods** in your daily diet\n\t+ Ensure you're getting **adequate fiber** (25-30g per day)\n\t+ **Limit processed foods and sugar**\n\t+ **Manage stress** through techniques like meditation or yoga\n\t+ Prioritize **adequate sleep** (7-9 hours per night)\n\t+ **Stay hydrated** by drinking plenty of water\n\n## Foods to Avoid\nIt's essential to avoid certain foods that can exacerbate Leaky Gut Syndrome, including:\n* **Alcohol**\n* **NSAIDs** (non-steroidal anti-inflammatory drugs)\n* **Processed foods**\n\n## Next Steps\nTo better understand your situation and provide more tailored advice, can you please tell me:\n* What symptoms are you currently experiencing?\n* Have you noticed any triggers that make your symptoms worse?\n* Are you taking any medications or supplements that may be relevant to your condition?",
+        "timestamp": "2026-03-11T15:47:09.943424",
+        "message": "hi",
+        "response": "## Introduction\nHello, it's nice to meet you. I'm here to help with any questions or concerns you may have. \n\n## Next Steps\nBefore we begin, I just want to check if you have any specific questions or topics you'd like to discuss, such as nutrition, carb timing, or blood sugar management? \n\nPlease feel free to share, and I'll do my best to provide helpful and personalized advice.",
         "topic": "General Health"
+      },
+      {
+        "timestamp": "2026-03-11T15:49:30.854368",
+        "message": "i have fever",
+        "response": "## Acknowledging Your Symptom\nI'm so sorry to hear that you have a fever. **Please take care of yourself and stay hydrated**. Given your medical conditions, **diabetes and hypertension**, it's essential to monitor your temperature and overall health closely.\n\n## Recommendations\nTo help manage your fever, consider the following:\n* Drink **warm fluids**, such as soups or herbal teas, to help soothe your body.\n* Include **vitamin C rich foods** in your diet to support your immune system.\n* **Ginger**, **turmeric**, and **honey** may also help alleviate your symptoms.\n* **Garlic** has antimicrobial properties that can aid in fighting off the underlying infection.\n* **Rest and hydration** are crucial for recovery, so make sure to get plenty of both.\n\n## Important Considerations\nAs you have **diabetes**, it's essential to monitor your blood sugar levels closely, as fever can affect your glucose levels. Also, be mindful of your **medications**, **metformin** and **paracetamol**, and take them as prescribed by your doctor.\n\n## Follow-up Questions\nCan you please tell me:\n* How long have you had the fever?\n* What is your current temperature?\n* Are you experiencing any other symptoms, such as **headaches**, **fatigue**, or **digestive issues**?\n* Have you taken any medication to help manage your fever?",
+        "topic": "Symptoms & Diagnosis"
+      },
+      {
+        "timestamp": "2026-04-02T12:38:24.620353",
+        "message": "i have fever for past 1 week",
+        "response": "## Acknowledging Your Symptom\nI'm so sorry to hear that you've had a fever for the past week. **Please take care of yourself and stay hydrated**. Given your medical conditions, **diabetes and hypertension**, it's essential to monitor your temperature and overall health closely.\n\n## Recommendations\nTo help manage your fever, consider the following:\n* Drink **warm fluids**, such as soups or herbal teas, to help soothe your body.\n* Include **vitamin C rich foods** in your diet to support your immune system.\n* **Ginger**, **turmeric**, and **honey** may also help alleviate your symptoms.\n* **Garlic** has antimicrobial properties that can aid in fighting off the underlying infection.\n* **Rest and hydration** are crucial for recovery, so make sure to get plenty of both.\n\n## Important Considerations\nAs you have **diabetes**, it's essential to monitor your blood sugar levels closely, as fever can affect your glucose levels. Also, be mindful of your **medications**, **metformin** and **paracetamol**, and take them as prescribed by your doctor. However, please note that **paracetamol** can help reduce fever, so you may want to consult with your doctor about taking it to manage your fever.\n\n## Follow-up Questions\nCan you please tell me:\n* What is your current temperature?\n* Are you experiencing any other symptoms, such as **headaches**, **fatigue**, or **digestive issues**?\n* Have you taken any medication to help manage your fever?\n* Have you noticed any changes in your blood sugar levels since the fever started?\n\n## Additional Concerns\nSince you've had a fever for an extended period, it's crucial to consult with your doctor to rule out any underlying infections or complications. **Please seek medical attention** if your symptoms worsen or if you experience any difficulty breathing, chest pain, or severe headaches.",
+        "topic": "Symptoms & Diagnosis"
+      },
+      {
+        "timestamp": "2026-04-04T13:06:15.218628",
+        "message": "hii i am feeling very tired today",
+        "response": "## Acknowledging Your Symptom\nI'm so sorry to hear that you're feeling very tired today. **Please take care of yourself and try to rest**. Given your medical conditions, **diabetes and hypertension**, it's essential to monitor your energy levels and overall health closely.\n\n## Possible Causes\nFeeling tired can be caused by various factors, including:\n* **Dehydration**: Not drinking enough fluids can lead to fatigue.\n* **Lack of sleep**: Not getting enough sleep or having poor sleep quality can cause tiredness.\n* **Medications**: Some medications, such as **metformin**, can cause fatigue as a side effect.\n* **Underlying medical conditions**: Diabetes and hypertension can also contribute to feelings of tiredness.\n\n## Recommendations\nTo help manage your fatigue, consider the following:\n* **Stay hydrated**: Drink plenty of fluids, aiming for **3.7 liters** of total fluids per day.\n* **Get enough sleep**: Aim for **7-9 hours** of sleep per night and establish a consistent sleep schedule.\n* **Exercise regularly**: Engage in physical activity, but not too close to bedtime, to help improve energy levels.\n* **Eat a balanced diet**: Focus on whole, nutritious foods, and avoid incompatible food combinations.\n\n## Follow-up Questions\nCan you please tell me:\n* How long have you been feeling tired?\n* Have you experienced any other symptoms, such as **headaches**, **digestive issues**, or **difficulty breathing**?\n* Have you taken any medication or supplements that could be contributing to your fatigue?\n* Are you getting enough sleep and staying hydrated?\n\n## Additional Concerns\nAs you've been experiencing a fever for the past week, it's essential to consider whether your fatigue is related to your underlying infection or another factor. **Please consult with your doctor** if your symptoms worsen or if you experience any difficulty breathing, chest pain, or severe headaches.",
+        "topic": "Sleep & Rest"
       }
     ],
-    "prescriptions": [],
-    "lab_reports": [],
+    "prescriptions": [
+      {
+        "id": "02cb14b0-facd-454e-8e90-52945a9d805a",
+        "filename": "prescription.jpg",
+        "image_path": "uploads/prescriptions/default/02cb14b0-facd-454e-8e90-52945a9d805a.jpg",
+        "upload_date": "2026-04-02T12:31:45.449058",
+        "extracted_text": "workplaceprescriptions\n\nworkplace\nsupplies\n\nWorkplace Medical Center\n100 Main Street =.\nSmithville, CA 90291 ration\n(212) 555-4444 = raed\n\noes eae ae\nTHIS IS A PRESCRIPTION -- PLEASE TAKE TO YOUR PHARMACY.\n\n\u2018WSTIES TIESTIESTIESTIESTIESTIESTIES TIESTIESTIESTIES IESTIESTIESTIESTIESTIESTIES TIES TIESTIESTIESTIES TIESTIES TESTIES TIES TIESTIES TIESTIES IES ESTIESTTESTIES IESTIES TESTIESTIESTIESTIES IESTIES IES TESTIESTIESTTESTIESTIES TIESTESTIESTIESTIESTIESTIES TIES ESTIESTIESTIES IESTIES TIESIESTIESTIESTIES IESTIES TIES IESTIESTIESTIES IESTIES TIES TIESTIESTIESTIES IESTIES TIES IESTIES TESTES TIESTIES TESIESTIESTIESTIES TIESTIES TIES TIESTIESTIESTTES TIESTIES TIES IESTIESTIESTIES IESTIES TIES TIESTIESTIESTIES TIESTIES TIES TIESTIES TIESTIES IESTIESTIESTIESTIESTESTIES IESTIES TIES TIESTIESTTESTIES IESTIES TIES TIESTIESTESTIES IESTIES TIES IESTIES TIESTIES TESTIES TIES TIESTIES TIESTIES IESTIES TIES TIESTIES IESTIES IESTIES TIES TIESTIES TIESTIES IESTIESTIESTTESTIESTESTIES IESTIESTIESTIESTIES TESTES IESTIES TIES TES IESTIESIESTIES TIESTIESTIESTIESTIESTTESTIES\n\nvisit: www.paris-software.com/samples/workplaceprescriptions\n\nBirthdate 05/05/1947 Age: 67 Years Sex: FEMALE MRN: GSa- 000555555 |\n\nan Linn nn nnn ni! nse\n\nPatient Address: UNK Home Phone: (555)777-7777\nBLOOMINGDALE, IL 55555 Work Phone:\n\n Preseription Details: wn Wale lecua NaS |\n| Rx: morphine 130 mg/24 hours oral capsule, extended release Start Date: 04/13/2015\n\u2014 SIG: 130 mg = 1 cap Oral Daily\n\nDispense/Supply: **30** (thirty) cap\n\nRefill: ied | ha\nRx: OXYcodone oral 10 mg tablet Start Date: 04/13/2015\n\u2014 SIG: 10 mg = 1 tab Oral Q6H PRN for pain\n\nDispense/Supply: **120** (one hundred and twenty) tab\n\nRefill: ied | ha\n| Rx: codeine sulfate oral 60 mg tablet Start Date: 04/13/2015\n\u2014 SIG: 60 mg = 1 tab Oral Q4H PRN for pain\n\nDispense/Supply: **180** (one hundred and eighty) tab\n\nRefill: kal | al\n| Rx: Norco oral 325-5 mg tablet Start Date: 04/13/2015\n\u2014 SIG: 2 tab Oral Q4H PRN for pain\n\nDispense/Supply: **360** (three hundred and sixty) tab\n\nRefill: ied | ha\n\nxX\nDISPENSE AS WRITTEN SUBSTITUTION PERMITTED\n\n| Prescribed by: Doc Test DEA #: 1111111 NPI #: 2222222\n\nEntered by: RNI RN\n\nau. sa11sau.sauisau.saiisa11sal1ea11saisau1sa116a11sa116911$aL1ea11sal sa sa11$a11sa11Sa11 ea11 Sal \u00a2asa116a11sa11$aL1 6311S 11 sa11$a11sa11$aL16a11 Sal \u00a2a1sa116a11sa11$aL1sa11Sal \u00a2a1sa11$a11sa11SaLL6a11Sall 61 sal. 6a11.sa116aLL6a11Sal1 a1, al1sa11sa116a11 6311S \u00a2au sai \u00a2a11a11$aL6a11Sal1 a1, sai. sa11sa11$aL6a11Sa1 1 sa11\u00a2a11a116aLLsa11Sal1 11 sa116a11211$a116a11S21 \u00a2a1.sa11\u00a2a11 3116911 sa11Sal1 e411 a1. $a11a11$aL16a11Sal1 \u00a2a1.sa1\u00a2a11s3116a11sa11Sal1 6311 au sa11sa11$aL16a11Sal1 \u00a2a11 a1 \u00a2a112116a11sa11Sa11 631121 sa11 62116911 sa11Sal1 e311 Sai \u00a2a11a116a11sa11Sal1 e311 a1 6a11sa11$a11sa11Sal1 121 \u00a2a11sa116a11sa11SaL1 631124 a11sa11$a11.sa11Sal1 e311 Sai sa11sa116a11a11Sa11 e311 Sai a1, sa11$a11.sa11Sal1 e311 Sal a1, sa116a1Lsa11sal1ea11 sal ali sa11salLsal1sal1 eal1salisauisau.salisauisauisausauisausausausausausausd,\n\nPrescription Security Features:\n\n1. The border around the prescription is micro-printed with the Patient's Name visible under 5x or greater magnification. Patient's name illegible if photocopied or\nscanned.\n\n2. The text \"RX ORIGINAL RX\" visible in the bottom center of the document with light gray patterned background and will be missing when photocopied or scanned.\n\n3. The text \"VOID\" appears when scanned or photocopied.\n\n4. Quantities and refills enclosed in asterisks.",
+        "medications": [
+          "THIS IS A PRESCRIPTION -- PLEASE TAKE TO YOUR PHARMACY.",
+          "| Rx: morphine 130 mg/24 hours oral capsule, extended release Start Date: 04/13/2015",
+          "\u2014 SIG: 130 mg = 1 cap Oral Daily",
+          "Dispense/Supply: **30** (thirty) cap",
+          "Rx: OXYcodone oral 10 mg tablet Start Date: 04/13/2015",
+          "\u2014 SIG: 10 mg = 1 tab Oral Q6H PRN for pain",
+          "Dispense/Supply: **120** (one hundred and twenty) tab",
+          "| Rx: codeine sulfate oral 60 mg tablet Start Date: 04/13/2015",
+          "\u2014 SIG: 60 mg = 1 tab Oral Q4H PRN for pain",
+          "Dispense/Supply: **180** (one hundred and eighty) tab"
+        ],
+        "doctor_name": "",
+        "date": "05/05/1947",
+        "notes": "workplaceprescriptions\n\nworkplace\nsupplies\n\nWorkplace Medical Center\n100 Main Street =.\nSmithville, CA 90291 ration\n(212) 555-4444 = raed\n\noes eae ae\nTHIS IS A PRESCRIPTION -- PLEASE TAKE TO YOUR PHARMACY.\n\n\u2018WSTIES TIESTIESTIESTIESTIESTIESTIES TIESTIESTIESTIES IESTIESTIESTIESTIESTIESTIES TIES TIESTIESTIESTIES TIESTIES TESTIES TIES TIESTIES TIESTIES IES ESTIESTTESTIES IESTIES TESTIESTIESTIESTIES IESTIES IES TESTIESTIESTTESTIESTIES TIESTESTIESTIESTIESTIESTIES TIES ESTIESTIESTIES IESTIES TIESIESTIESTIESTIES IESTIES TIES IESTIESTIESTIES IESTIES TIES TIESTIESTIESTIES IESTIES TIES IESTIES TESTES TIESTIES TESIESTIESTIESTIES TIESTIES TIES TIESTIESTIESTTES TIESTIES TIES IESTIESTIESTIES IESTIES TIES TIESTIESTIESTIES TIESTIES TIES TIESTIES TIESTIES IESTIESTIESTIESTIESTESTIES IESTIES TIES TIESTIESTTESTIES IESTIES TIES TIESTIESTESTIES IESTIES TIES IESTIES TIESTIES TESTIES TIES TIESTIES TIESTIES IESTIES TIES TIESTIES IESTIES IESTIES TIES TIESTIES TIESTIES IESTIESTIESTTESTIESTESTIES IESTIESTIESTIESTIES TESTES IESTIES TIES TES IESTIESIESTIES TIESTIESTIESTIESTIESTTESTIES\n\nvisit: www.paris-software.com/samples/workplaceprescriptions\n\nBirthdate 05/05/1947 Age: 67 Years Sex: FEMALE MRN: GSa- 000555555 |\n\nan Linn nn nnn ni! nse\n\nPatient Address: UNK Home Phone: (555)777-7777\nBLOOMINGDALE, IL 55555 Work Phone:\n\n Preseription Details: wn Wale lecua NaS |\n| Rx: morphine 130 mg/24 hours oral capsule, extended release Start Date: 04/13/2015\n\u2014 SIG: 130 mg = 1 cap Oral Daily\n\nDispense/Supply: **30** (thirty) cap\n\nRefill: ied | ha\nRx: OXYcodone oral 10 mg tablet Start Date: 04/13/2015\n\u2014 SIG: 10 mg = 1 tab Oral Q6H PRN for pain\n\nDispense/Supply: **120** (one hundred and twenty) tab\n\nRefill: ied | ha\n| Rx: codeine sulfate oral 60 mg tablet Start Date: 04/13/2015\n\u2014 SIG: 60 mg = 1 tab Oral Q4H PRN for pain\n\nDispense/Supply: **180** (one hundred and eighty) tab\n\nRefill: kal | al\n| Rx: Norco oral 325-5 mg tablet Start Date: 04/13/2015\n\u2014 SIG: 2 tab Oral Q4H PRN for pain\n\nDispense/Supply: **360** (three hundred and sixty) tab\n\nRefill: ied | ha\n\nxX\nDISPENSE AS WRITTEN SUBSTITUTION PERMITTED\n\n| Prescribed by: Doc Test DEA #: 1111111 NPI #: 2222222\n\nEntered by: RNI RN\n\nau. sa11sau.sauisau.saiisa11sal1ea11saisau1sa116a11sa116911$aL1ea11sal sa sa11$a11sa11Sa11 ea11 Sal \u00a2asa116a11sa11$aL1 6311S 11 sa11$a11sa11$aL16a11 Sal \u00a2a1sa116a11sa11$aL1sa11Sal \u00a2a1sa11$a11sa11SaLL6a11Sall 61 sal. 6a11.sa116aLL6a11Sal1 a1, al1sa11sa116a11 6311S \u00a2au sai \u00a2a11a11$aL6a11Sal1 a1, sai. sa11sa11$aL6a11Sa1 1 sa11\u00a2a11a116aLLsa11Sal1 11 sa116a11211$a116a11S21 \u00a2a1.sa11\u00a2a11 3116911 sa11Sal1 e411 a1. $a11a11$aL16a11Sal1 \u00a2a1.sa1\u00a2a11s3116a11sa11Sal1 6311 au sa11sa11$aL16a11Sal1 \u00a2a11 a1 \u00a2a112116a11sa11Sa11 631121 sa11 62116911 sa11Sal1 e311 Sai \u00a2a11a116a11sa11Sal1 e311 a1 6a11sa11$a11sa11Sal1 121 \u00a2a11sa116a11sa11SaL1 631124 a11sa11$a11.sa11Sal1 e311 Sai sa11sa116a11a11Sa11 e311 Sai a1, sa11$a11.sa11Sal1 e311 Sal a1, sa116a1Lsa11sal1ea11 sal ali sa11salLsal1sal1 eal1salisauisau.salisauisauisausauisausausausausausausd,\n\nPrescription Security Features:\n\n1. The border around the prescription is micro-printed with the Patient's Name visible under 5x or greater magnification. Patient's name illegible if photocopied or\nscanned.\n\n2. The text \"RX ORIGINAL RX\" visible in the bottom center of the document with light gray patterned background and will be missing when photocopied or scanned.\n\n3. The text \"VOID\" appears when scanned or photocopied.\n\n4. Quantities and refills enclosed in asterisks."
+      }
+    ],
+    "lab_reports": [
+      {
+        "id": "8601f717-800f-467e-a325-9b479bc6240d",
+        "filename": "blood test .png",
+        "image_path": "uploads/lab_reports/default/8601f717-800f-467e-a325-9b479bc6240d.png",
+        "upload_date": "2026-04-02T12:35:08.533188",
+        "extracted_text": "\u2014 J Hello@flabs.in\nrlabs & +91 7253928905\n@ https://www-flabs.in/\nName : MrDummy Potient ID: PNZ\n\u2018Age/Gender : 20/Male ReportID. =: RET\nReferred By : Self Collection Date: 24/06/2023 08:49 PM\nPhone No. : ReportDate : 24/06/2023 09:02 PM\nHAEMATOLOGY\nCOMPLETE BLOOD COUNT (CBC)\nTEST DESCRIPTION RESULT REF. RANGE UNIT\nHaemoglobin 15 13-17 \u2018g/dl\nTotal Leucocyte Count 5000 4000-10000 Zou\nDifferential Leucocyte Count\nNeutrophils 50 40-80 *\nLymphocytes 40 20-40 %\nEosinophils 1 1-6 %\nMonocytes 9 2-10 *\nBasophils 0.00 0-1 %\n\u2018Absolute Leucocyte Count\nAbsolute Neutrophils 2500.00. 2000-7000 /eumm\nAbsolute Lymphocytes. 2000.00 1000 - 3000 yeumm\nAbsolute Eosinophils 50.00 20-500 /eumm\nAbsolute Monocytes 450.00 200-1000 Jeumm\nRBC Indices\nRBC Count 5 45-55 Me eumm\nMCV 80.00 81-101 fl\nMcH 30.00 27-32 Po\nMCHC 37.50 315-345 \u2018g/dl\nHet 40 40-50 %\nRoW.cv 2 116-140 *\nRDW-SD_ 40 39-46 fl\nPlatelets Indices\nPlatelet Count 300000 150000 - 410000 Jeumm\nPct 35\nMPV 8 75-115 fl\nPow 9\nInterpretation:",
+        "test_category": "Complete Blood Count (CBC)",
+        "test_values": {
+          "rbc": {
+            "value": 5.0,
+            "unit": "",
+            "raw_line": "RBC Count 5 45-55 Me eumm"
+          },
+          "mcv": {
+            "value": 80.0,
+            "unit": "",
+            "raw_line": "MCV 80.00 81-101 fl"
+          },
+          "mch": {
+            "value": 30.0,
+            "unit": "",
+            "raw_line": "McH 30.00 27-32 Po"
+          },
+          "mchc": {
+            "value": 37.5,
+            "unit": "",
+            "raw_line": "MCHC 37.50 315-345 \u2018g/dl"
+          },
+          "platelets": {
+            "value": 300000.0,
+            "unit": "",
+            "raw_line": "Platelet Count 300000 150000 - 410000 Jeumm"
+          }
+        },
+        "gender": "male",
+        "analysis": {
+          "test_category": "Complete Blood Count (CBC)",
+          "overall_status": "Some values need attention",
+          "parameters": [
+            {
+              "name": "Red Blood Cells (RBC)",
+              "value": 5.0,
+              "unit": "",
+              "normal_range": "4.5-5.5 million cells/\u03bcL",
+              "status": "normal",
+              "interpretation": "Within normal range",
+              "recommendations": [],
+              "is_critical": false
+            },
+            {
+              "name": "Mean Corpuscular Volume (MCV)",
+              "value": 80.0,
+              "unit": "",
+              "normal_range": "80-100 fL",
+              "status": "normal",
+              "interpretation": "Within normal range",
+              "recommendations": [],
+              "is_critical": false
+            },
+            {
+              "name": "Mean Corpuscular Hemoglobin (MCH)",
+              "value": 30.0,
+              "unit": "",
+              "normal_range": "27-33 pg",
+              "status": "normal",
+              "interpretation": "Within normal range",
+              "recommendations": [],
+              "is_critical": false
+            },
+            {
+              "name": "Mean Corpuscular Hemoglobin Concentration (MCHC)",
+              "value": 37.5,
+              "unit": "",
+              "normal_range": "32-36 g/dL",
+              "status": "high",
+              "interpretation": "Above normal range. This indicates values above normal range",
+              "recommendations": [
+                "Consult your doctor for personalized advice",
+                "Follow a balanced, healthy diet",
+                "Regular physical activity",
+                "Adequate sleep and stress management"
+              ],
+              "is_critical": false
+            },
+            {
+              "name": "Platelets",
+              "value": 300000.0,
+              "unit": "",
+              "normal_range": "150000-450000 cells/\u03bcL",
+              "status": "normal",
+              "interpretation": "Within normal range",
+              "recommendations": [],
+              "is_critical": false
+            }
+          ],
+          "summary": "Some of your test values are outside the normal range. Please review the details above.",
+          "lifestyle_recommendations": [],
+          "when_to_consult_doctor": [
+            "Consult your doctor to discuss these abnormal results"
+          ],
+          "abnormal_count": 1,
+          "total_parameters": 5
+        }
+      },
+      {
+        "id": "4271cfde-7a07-464f-adbd-2da90413d6bb",
+        "filename": "blood test .png",
+        "image_path": "uploads/lab_reports/default/4271cfde-7a07-464f-adbd-2da90413d6bb.png",
+        "upload_date": "2026-04-04T13:08:36.113785",
+        "extracted_text": "\u2014 J Hello@flabs.in\nrlabs & +91 7253928905\n@ https://www-flabs.in/\nName : MrDummy Potient ID: PNZ\n\u2018Age/Gender : 20/Male ReportID. =: RET\nReferred By : Self Collection Date: 24/06/2023 08:49 PM\nPhone No. : ReportDate : 24/06/2023 09:02 PM\nHAEMATOLOGY\nCOMPLETE BLOOD COUNT (CBC)\nTEST DESCRIPTION RESULT REF. RANGE UNIT\nHaemoglobin 15 13-17 \u2018g/dl\nTotal Leucocyte Count 5000 4000-10000 Zou\nDifferential Leucocyte Count\nNeutrophils 50 40-80 *\nLymphocytes 40 20-40 %\nEosinophils 1 1-6 %\nMonocytes 9 2-10 *\nBasophils 0.00 0-1 %\n\u2018Absolute Leucocyte Count\nAbsolute Neutrophils 2500.00. 2000-7000 /eumm\nAbsolute Lymphocytes. 2000.00 1000 - 3000 yeumm\nAbsolute Eosinophils 50.00 20-500 /eumm\nAbsolute Monocytes 450.00 200-1000 Jeumm\nRBC Indices\nRBC Count 5 45-55 Me eumm\nMCV 80.00 81-101 fl\nMcH 30.00 27-32 Po\nMCHC 37.50 315-345 \u2018g/dl\nHet 40 40-50 %\nRoW.cv 2 116-140 *\nRDW-SD_ 40 39-46 fl\nPlatelets Indices\nPlatelet Count 300000 150000 - 410000 Jeumm\nPct 35\nMPV 8 75-115 fl\nPow 9\nInterpretation:",
+        "test_category": "Complete Blood Count (CBC)",
+        "test_values": {
+          "rbc": {
+            "value": 5.0,
+            "unit": "",
+            "raw_line": "RBC Count 5 45-55 Me eumm"
+          },
+          "mcv": {
+            "value": 80.0,
+            "unit": "",
+            "raw_line": "MCV 80.00 81-101 fl"
+          },
+          "mch": {
+            "value": 30.0,
+            "unit": "",
+            "raw_line": "McH 30.00 27-32 Po"
+          },
+          "mchc": {
+            "value": 37.5,
+            "unit": "",
+            "raw_line": "MCHC 37.50 315-345 \u2018g/dl"
+          },
+          "platelets": {
+            "value": 300000.0,
+            "unit": "",
+            "raw_line": "Platelet Count 300000 150000 - 410000 Jeumm"
+          }
+        },
+        "gender": "male",
+        "analysis": {
+          "test_category": "Complete Blood Count (CBC)",
+          "overall_status": "Some values need attention",
+          "parameters": [
+            {
+              "name": "Red Blood Cells (RBC)",
+              "value": 5.0,
+              "unit": "",
+              "normal_range": "4.5-5.5 million cells/\u03bcL",
+              "status": "normal",
+              "interpretation": "Within normal range",
+              "recommendations": [],
+              "is_critical": false
+            },
+            {
+              "name": "Mean Corpuscular Volume (MCV)",
+              "value": 80.0,
+              "unit": "",
+              "normal_range": "80-100 fL",
+              "status": "normal",
+              "interpretation": "Within normal range",
+              "recommendations": [],
+              "is_critical": false
+            },
+            {
+              "name": "Mean Corpuscular Hemoglobin (MCH)",
+              "value": 30.0,
+              "unit": "",
+              "normal_range": "27-33 pg",
+              "status": "normal",
+              "interpretation": "Within normal range",
+              "recommendations": [],
+              "is_critical": false
+            },
+            {
+              "name": "Mean Corpuscular Hemoglobin Concentration (MCHC)",
+              "value": 37.5,
+              "unit": "",
+              "normal_range": "32-36 g/dL",
+              "status": "high",
+              "interpretation": "Above normal range. This indicates values above normal range",
+              "recommendations": [
+                "Consult your doctor for personalized advice",
+                "Follow a balanced, healthy diet",
+                "Regular physical activity",
+                "Adequate sleep and stress management"
+              ],
+              "is_critical": false
+            },
+            {
+              "name": "Platelets",
+              "value": 300000.0,
+              "unit": "",
+              "normal_range": "150000-450000 cells/\u03bcL",
+              "status": "normal",
+              "interpretation": "Within normal range",
+              "recommendations": [],
+              "is_critical": false
+            }
+          ],
+          "summary": "Please review the abnormal parameters above.",
+          "lifestyle_recommendations": [
+            "**Stay hydrated**: Drink plenty of water to help your body flush out any toxins that might be contributing to the high MCHC levels.",
+            "**Maintain a balanced diet**: Focus on eating nutrient-rich foods, such as fruits, vegetables, whole grains, and lean proteins, to ensure you're getting the necessary vitamins and minerals.",
+            "**Avoid excessive iron intake**: While iron is essential for healthy red blood cells, too much of it can exacerbate high MCHC levels. Limit your consumption of iron-rich foods, such as red meat, spinach, and fortified cereals."
+          ],
+          "when_to_consult_doctor": [
+            "Consult your doctor to discuss these results"
+          ],
+          "abnormal_count": 1,
+          "total_parameters": 5
+        }
+      }
+    ],
     "settings": {
       "theme": "light",
       "notifications": true,

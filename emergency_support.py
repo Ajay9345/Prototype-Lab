@@ -182,6 +182,20 @@ class EmergencySupport:
                 'lon': 77.6200
             }
         ]
+        
+        # Distress keywords for ambient detection
+        self.distress_keywords = [
+            'help', 'emergency', 'heart attack', 'stroke', 'bleeding', 
+            'accident', 'pain', 'breathing', 'unconscious', 'falling',
+            'bachao', 'madad', 'ambulance' # Vernacular (Hindi)
+        ]
+    
+    def detect_distress_keywords(self, text: str) -> bool:
+        """
+        Scan text for distress keywords.
+        """
+        text_lower = text.lower()
+        return any(keyword in text_lower for keyword in self.distress_keywords)
     
     def get_emergency_contacts(self) -> Dict[str, str]:
         """Get all emergency contact numbers."""

@@ -79,13 +79,94 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentLabReportId = null;
 
-    const challengesBtn = document.getElementById('challenges-btn');
-    const challengesModal = document.getElementById('challenges-modal');
-    const closeChallengesBtn = document.querySelector('.close-challenges');
     const totalPointsEl = document.getElementById('total-points');
     const totalBadgesEl = document.getElementById('total-badges');
 
+    const nutritionBtn = document.getElementById('nutrition-btn');
+    const nutritionModal = document.getElementById('nutrition-modal');
+    const closeNutritionBtn = document.querySelector('.close-nutrition');
+    const foodScannerForm = document.getElementById('food-scanner-form');
+    const foodImageInput = document.getElementById('food-image');
+    const foodPreviewContainer = document.getElementById('food-preview-container');
+    const foodPreviewImage = document.getElementById('food-preview');
+    const foodScanResult = document.getElementById('food-scan-result');
+    const receiptAuditorForm = document.getElementById('receipt-auditor-form');
+    const receiptImageInput = document.getElementById('receipt-image');
+    const receiptPreviewContainer = document.getElementById('receipt-preview-container');
+    const receiptPreviewImage = document.getElementById('receipt-preview');
+    const receiptAuditResult = document.getElementById('receipt-audit-result');
+
+    const insuranceBtn = document.getElementById('insurance-btn');
+    const insuranceModal = document.getElementById('insurance-modal');
+    const closeInsuranceBtn = document.querySelector('.close-insurance');
+    const checkInsuranceBtn = document.getElementById('check-insurance-btn');
+    const policyTextInput = document.getElementById('policy-text');
+    const treatmentNameInput = document.getElementById('treatment-name');
+    const insuranceResult = document.getElementById('insurance-result');
+
+    const firstAidBtn = document.getElementById('first-aid-btn');
+    const firstAidModal = document.getElementById('first-aid-modal');
+    const closeFirstAidBtn = document.querySelector('.close-first-aid');
+    const firstAidChips = document.querySelectorAll('.first-aid-chip');
+
+    const viewLabTrendsBtn = document.getElementById('view-lab-trends-btn');
+    const labTrendsSection = document.getElementById('lab-trends-section');
+    const closeTrendsBtn = document.getElementById('close-trends-btn');
+
+    const runSimulationBtn = document.getElementById('run-simulation-btn');
+
+    const symptomCamBtn = document.getElementById('symptom-cam-btn');
+    const symptomCamModal = document.getElementById('symptom-cam-modal');
+    const closeSymptomCamBtn = document.querySelector('.close-symptom-cam');
+    const symptomCamForm = document.getElementById('symptom-cam-form');
+    const symptomImageInput = document.getElementById('symptom-image');
+    const symptomFilePreview = document.getElementById('symptom-file-preview');
+    const symptomPreviewImage = document.getElementById('symptom-preview-image');
+    const symptomCamResult = document.getElementById('symptom-cam-result');
+    const symptomContext = document.getElementById('symptom-context');
+
+    const verifyMedSafetyBtn = document.getElementById('verify-med-safety-btn');
+
     const emergencyAlert = document.getElementById('emergency-alert');
+
+    // --- CRITICAL FIRST AID HANDLER (TOP PRIORITY) ---
+    const firstAidSelector = document.querySelector('.first-aid-selector');
+    if (firstAidSelector) {
+        console.log("First Aid selector found, attaching listener");
+        firstAidSelector.addEventListener('click', async (e) => {
+            const chip = e.target.closest('.first-aid-chip');
+            if (!chip) return;
+
+            const type = chip.dataset.type;
+            console.log("First Aid chip clicked:", type);
+            const stepsDiv = document.getElementById('first-aid-steps');
+            if (!stepsDiv) return;
+
+            stepsDiv.innerHTML = '<div style="padding: 20px; text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading life-saving steps...</div>';
+
+            try {
+                const res = await fetch(`/first-aid?type=${type}&_t=${Date.now()}`);
+                if (!res.ok) throw new Error(`Server error: ${res.status}`);
+                const data = await res.json();
+
+                if (data.steps && Array.isArray(data.steps)) {
+                    stepsDiv.innerHTML = data.steps.map(s => `
+                        <div class="step" style="margin-bottom: 12px; padding: 15px; border-left: 5px solid var(--primary-color); background: #ffffff; border-radius: 0 10px 10px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #1e293b; display: block!important;">
+                            <div style="font-weight: 700; color: var(--primary-color); margin-bottom: 5px; font-size: 0.8rem; text-transform: uppercase;">Step ${s.step}</div>
+                            <div style="line-height: 1.5;">${s.text}</div>
+                        </div>`).join('');
+                } else {
+                    stepsDiv.innerHTML = '<div class="no-data">Invalid data received from server.</div>';
+                }
+
+                document.querySelectorAll('.first-aid-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            } catch (err) {
+                console.error("First Aid fetch error:", err);
+                stepsDiv.innerHTML = `<div class="no-data" style="color: #dc2626; padding: 20px;"><strong>Error:</strong> ${err.message}. Please check server logs.</div>`;
+            }
+        });
+    }
 
     initializeLanguage();
 
@@ -602,9 +683,366 @@ document.addEventListener('DOMContentLoaded', () => {
 
     hospitalModal.addEventListener('click', (e) => {
         if (e.target === hospitalModal) {
-            hospitalModal.classList.remove('show');
+                    hospitalModal.classList.remove('show');
         }
     });
+
+    // Nutrition Modal Functions
+    nutritionBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        nutritionModal.classList.add('show');
+    });
+
+    if (closeNutritionBtn) closeNutritionBtn.addEventListener('click', () => {
+        nutritionModal.classList.remove('show');
+    });
+
+    if (nutritionModal) nutritionModal.addEventListener('click', (e) => {
+        if (e.target === nutritionModal) nutritionModal.classList.remove('show');
+    });
+
+    // --- Nutrition Hub Vision-AI Handling ---
+
+    // Food Scanner Preview
+    if (foodImageInput) {
+        foodImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    foodPreviewImage.src = e.target.result;
+                    foodPreviewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                foodPreviewContainer.style.display = 'none';
+            }
+        });
+    }
+
+    // Food Scanner Submission
+    if (foodScannerForm) {
+        foodScannerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = foodImageInput.files[0];
+            if (!file) {
+                alert('Please select an image of the ingredient list.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('user_id', 'default');
+
+            const submitBtn = foodScannerForm.querySelector('button[type="submit"]');
+            const originalBtnContent = submitBtn.innerHTML;
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Auditing...';
+            submitBtn.disabled = true;
+            foodScanResult.style.display = 'block';
+            foodScanResult.innerHTML = '<div style="text-align: center; padding: 15px;"><i class="fas fa-spinner fa-spin"></i> FSSAI Auditor is checking ingredients...</div>';
+
+            try {
+                const res = await fetch('/scan-food', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    renderFoodScanResult(data);
+                } else {
+                    foodScanResult.innerHTML = `<div style="color: #dc2626; padding: 10px; background: #fee2e2; border-radius: 8px;">Error: ${data.message}</div>`;
+                }
+            } catch (err) {
+                console.error("Food Scan Error:", err);
+                foodScanResult.innerHTML = `<div style="color: #dc2626; padding: 10px; background: #fee2e2; border-radius: 8px;">Error: ${err.message}</div>`;
+            } finally {
+                submitBtn.innerHTML = originalBtnContent;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // Receipt Auditor Preview
+    if (receiptImageInput) {
+        receiptImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    receiptPreviewImage.src = e.target.result;
+                    receiptPreviewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                receiptPreviewContainer.style.display = 'none';
+            }
+        });
+    }
+
+    // Receipt Auditor Submission
+    if (receiptAuditorForm) {
+        receiptAuditorForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = receiptImageInput.files[0];
+            if (!file) {
+                alert('Please select an image of your grocery receipt.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('user_id', 'default');
+
+            const submitBtn = receiptAuditorForm.querySelector('button[type="submit"]');
+            const originalBtnContent = submitBtn.innerHTML;
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Auditing...';
+            submitBtn.disabled = true;
+            receiptAuditResult.style.display = 'block';
+            receiptAuditResult.innerHTML = '<div style="text-align: center; padding: 15px;"><i class="fas fa-spinner fa-spin"></i> Calculating your Basket Health Score...</div>';
+
+            try {
+                const res = await fetch('/audit-receipt', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    renderReceiptAuditResult(data);
+                } else {
+                    receiptAuditResult.innerHTML = `<div style="color: #dc2626; padding: 10px; background: #fee2e2; border-radius: 8px;">Error: ${data.message}</div>`;
+                }
+            } catch (err) {
+                console.error("Receipt Audit Error:", err);
+                receiptAuditResult.innerHTML = `<div style="color: #dc2626; padding: 10px; background: #fee2e2; border-radius: 8px;">Error: ${err.message}</div>`;
+            } finally {
+                submitBtn.innerHTML = originalBtnContent;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    function renderFoodScanResult(data) {
+        const gradeColor = data.grade === 'Green' ? '#10b981' : data.grade === 'Yellow' ? '#f59e0b' : '#ef4444';
+        const gradeBg = data.grade === 'Green' ? '#ecfdf5' : data.grade === 'Yellow' ? '#fffbeb' : '#fef2f2';
+
+        foodScanResult.innerHTML = `
+            <div style="background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; margin-top: 15px;">
+                <div style="background: ${gradeBg}; padding: 12px; border-bottom: 2px solid ${gradeColor}; display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0; color: #374151; font-size: 0.9rem;">Safety Grade</h4>
+                    <span style="background: ${gradeColor}; color: white; padding: 2px 10px; border-radius: 20px; font-weight: 700; font-size: 0.8rem;">${data.grade}</span>
+                </div>
+                <div style="padding: 15px;">
+                    <p style="font-size: 0.85rem; margin-bottom: 15px; font-weight: 500;">${data.summary || 'Scan complete.'}</p>
+                    
+                    ${data.risks && data.risks.length > 0 ? `
+                        <div style="margin-bottom: 12px;">
+                            <h5 style="font-size: 0.75rem; color: #ef4444; text-transform: uppercase;">Personal Risks</h5>
+                            <ul style="padding-left: 15px; font-size: 0.8rem; color: #4b5563;">
+                                ${data.risks.map(risk => `<li>${risk}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+
+                    ${data.alternatives && data.alternatives.length > 0 ? `
+                        <div>
+                            <h5 style="font-size: 0.75rem; color: #10b981; text-transform: uppercase;">Try These Instead</h5>
+                            <ul style="padding-left: 15px; font-size: 0.8rem; color: #4b5563;">
+                                ${data.alternatives.map(alt => `<li>${alt}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderReceiptAuditResult(data) {
+        const scoreColor = data.health_score >= 80 ? '#10b981' : data.health_score >= 60 ? '#f59e0b' : '#ef4444';
+        
+        receiptAuditResult.innerHTML = `
+            <div style="background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; margin-top: 15px;">
+                <div style="padding: 15px; text-align: center; border-bottom: 1px solid #e5e7eb;">
+                    <h5 style="margin: 0 0 10px 0; color: #6b7280; font-size: 0.8rem; text-transform: uppercase;">Basket Health Score</h5>
+                    <div style="font-size: 2.5rem; font-weight: 800; color: ${scoreColor};">${data.health_score}/100</div>
+                    <p style="font-size: 0.8rem; color: #4b5563; margin-top: 10px;">${data.personalized_advice || ''}</p>
+                </div>
+                <div style="padding: 15px;">
+                    ${data.red_flags && data.red_flags.length > 0 ? `
+                        <div style="margin-bottom: 12px;">
+                            <h5 style="font-size: 0.75rem; color: #ef4444; text-transform: uppercase;">Red Flags Found</h5>
+                            <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;">
+                                ${data.red_flags.map(flag => `<span style="background: #fee2e2; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">${flag}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${data.swaps && data.swaps.length > 0 ? `
+                        <div>
+                            <h5 style="font-size: 0.75rem; color: #10b981; text-transform: uppercase;">Suggested Health Swaps</h5>
+                            <ul style="padding-left: 15px; font-size: 0.8rem; color: #4b5563; margin-top: 5px;">
+                                ${data.swaps.map(swap => `<li>${swap}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    // Insurance Modal Functions
+    insuranceBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        insuranceModal.classList.add('show');
+    });
+
+    closeInsuranceBtn.addEventListener('click', () => {
+        insuranceModal.classList.remove('show');
+    });
+
+    insuranceModal.addEventListener('click', (e) => {
+        if (e.target === insuranceModal) insuranceModal.classList.remove('show');
+    });
+
+    // First Aid Modal Functions
+    first_aid_btn_listener = (e) => {
+        e.preventDefault();
+        firstAidModal.classList.add('show');
+    };
+    if (firstAidBtn) firstAidBtn.addEventListener('click', first_aid_btn_listener);
+
+    if (closeFirstAidBtn) closeFirstAidBtn.addEventListener('click', () => {
+        firstAidModal.classList.remove('show');
+    });
+
+    firstAidModal.addEventListener('click', (e) => {
+        if (e.target === firstAidModal) firstAidModal.classList.remove('show');
+    });
+
+    // Symptom Cam Modal Functions
+    if (symptomCamBtn) symptomCamBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        symptomCamModal.classList.add('show');
+    });
+
+    if (closeSymptomCamBtn) closeSymptomCamBtn.addEventListener('click', () => {
+        symptomCamModal.classList.remove('show');
+    });
+
+    if (symptomCamModal) symptomCamModal.addEventListener('click', (e) => {
+        if (e.target === symptomCamModal) symptomCamModal.classList.remove('show');
+    });
+
+    // Symptom Cam File Preview
+    if (symptomImageInput) {
+        symptomImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    symptomPreviewImage.src = e.target.result;
+                    symptomFilePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                symptomFilePreview.style.display = 'none';
+            }
+        });
+    }
+
+    // Symptom Cam Form Submission
+    if (symptomCamForm) {
+        symptomCamForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const file = symptomImageInput.files[0];
+            const context = symptomContext.value.trim();
+
+            if (!file) {
+                alert('Please select an image of the symptom.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('symptoms_history', context);
+            formData.append('user_id', 'default');
+
+            const submitBtn = symptomCamForm.querySelector('button[type="submit"]');
+            const originalBtnContent = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            submitBtn.disabled = true;
+            symptomCamResult.style.display = 'block';
+            symptomCamResult.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Our medical AI is analyzing your image. This may take a few seconds...</div>';
+
+            try {
+                const res = await fetch('/symptom-cam', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) throw new Error(`Server error: ${res.status}`);
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    renderSymptomCamResult(data);
+                } else {
+                    symptomCamResult.innerHTML = `<div class="error-message" style="color: #dc2626; padding: 15px; background: #fee2e2; border-radius: 8px;">
+                        <i class="fas fa-exclamation-circle"></i> ${data.message || 'Analysis failed. Please try describing your symptoms in the chat instead.'}
+                    </div>`;
+                }
+            } catch (err) {
+                console.error("Symptom Cam Error:", err);
+                symptomCamResult.innerHTML = `<div class="error-message" style="color: #dc2626; padding: 15px; background: #fee2e2; border-radius: 8px;">
+                    <i class="fas fa-times-circle"></i> Error: ${err.message}. Please check your connection and try again.
+                </div>`;
+            } finally {
+                submitBtn.innerHTML = originalBtnContent;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    function renderSymptomCamResult(data) {
+        const urgencyClass = data.urgency ? data.urgency.toLowerCase() : 'routine';
+        const urgencyIcon = urgencyClass === 'emergency' ? 'alert-triangle' : 
+                          urgencyClass === 'urgent' ? 'exclamation-circle' : 'info-circle';
+        
+        symptomCamResult.innerHTML = `
+            <div class="analysis-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin-top: 20px;">
+                <div class="analysis-header" style="background: #ffffff; padding: 15px; border-bottom: 2px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0; color: #1e293b;"><i class="fas fa-microscope" style="color: var(--primary-color);"></i> Visual Analysis Result</h4>
+                    <span class="urgency-badge ${urgencyClass}" style="padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+                        <i class="fas fa-${urgencyIcon}"></i> ${data.urgency}
+                    </span>
+                </div>
+                <div class="analysis-body" style="padding: 20px;">
+                    <p style="margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6; color: #334155;">${data.analysis}</p>
+                    
+                    ${data.possible_indications && data.possible_indications.length > 0 ? `
+                        <div style="margin-bottom: 20px;">
+                            <h5 style="margin-bottom: 10px; color: #475569; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Possible Indications</h5>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${data.possible_indications.map(ind => `<span style="background: #eef2ff; color: #4f46e5; padding: 4px 12px; border-radius: 15px; font-size: 0.85rem; border: 1px solid #c7d2fe;">${ind}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div style="background: #fff; border-left: 4px solid var(--primary-color); padding: 15px; border-radius: 0 8px 8px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <h5 style="margin-bottom: 5px; color: var(--primary-color); font-size: 0.85rem; text-transform: uppercase;">Actionable Recommendation</h5>
+                        <p style="margin: 0; font-weight: 500; font-size: 0.95rem; color: #1e293b;">${data.recommendation}</p>
+                    </div>
+
+                    <div style="margin-top: 20px; font-size: 0.75rem; color: #94a3b8; font-style: italic; text-align: center;">
+                        <i class="fas fa-info-circle"></i> DISCLAIMER: This is an AI-powered assessment for educational purposes and not a professional medical diagnosis. Please consult a healthcare professional for clinical evaluation.
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 
     // Pharmacy Locator Functions
     pharmacyBtn.addEventListener('click', (e) => {
@@ -1623,5 +2061,245 @@ document.addEventListener('DOMContentLoaded', () => {
             leaderboardList.appendChild(item);
         });
     }
-});
 
+    // --- NEW FEATURE HANDLERS ---
+
+    // Food Scanner Handler
+    if (foodScannerForm) foodScannerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fileInput = document.getElementById('food-image');
+        const file = fileInput.files[0];
+        if (!file) return;
+        const resultDiv = document.getElementById('food-scan-result');
+        resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing ingredients...';
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('user_id', 'default');
+
+        try {
+            const res = await fetch('/scan-food', { method: 'POST', body: formData });
+            const data = await res.json();
+            resultDiv.innerHTML = `<div class="result-box" style="padding: 10px; background: #f9f9f9; border-radius: 5px;">${marked.parse(data.analysis || 'Analysis failed.')}</div>`;
+        } catch (err) { resultDiv.innerHTML = 'Error scanning food.'; }
+    });
+
+    // Receipt Auditor Handler
+    if (receiptAuditorForm) receiptAuditorForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fileInput = document.getElementById('receipt-image');
+        const file = fileInput.files[0];
+        if (!file) return;
+        const resultDiv = document.getElementById('receipt-audit-result');
+        resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Auditing basket...';
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('user_id', 'default');
+
+        try {
+            const res = await fetch('/audit-receipt', { method: 'POST', body: formData });
+            const data = await res.json();
+            resultDiv.innerHTML = `<div class="result-box" style="padding: 10px; background: #f9f9f9; border-radius: 5px;"><strong>Health Score: ${data.overall_health_score}/10</strong><br>${marked.parse(data.summary || '')}</div>`;
+        } catch (err) { resultDiv.innerHTML = 'Error auditing receipt.'; }
+    });
+
+
+    // Digital Twin Handler
+    const runSimBtn = document.getElementById('run-simulation-btn');
+    if (runSimBtn) runSimBtn.addEventListener('click', async () => {
+        const scenario = document.getElementById('simulation-scenario').value;
+        if (!scenario) return;
+        const resultDiv = document.getElementById('simulation-result');
+        resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running simulation...';
+
+        try {
+            const res = await fetch('/simulate-health', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: 'default', scenario: scenario })
+            });
+            const data = await res.json();
+            const timelineHtml = Object.entries(data.timeline || {}).map(([t, desc]) => `<li><strong>${t}:</strong> ${desc}</li>`).join('');
+            resultDiv.innerHTML = `<div class="result-box" style="padding: 10px; background: #f9f9f9; border-radius: 5px;"><strong>Visual Preview:</strong> ${data.visual_preview_desc}<br><ul>${timelineHtml}</ul></div>`;
+        } catch (err) { resultDiv.innerHTML = 'Error running simulation.'; }
+    });
+
+    // Lab Trends Handler
+    if (viewLabTrendsBtn) viewLabTrendsBtn.addEventListener('click', async () => {
+        if (labTrendsSection) labTrendsSection.style.display = 'block';
+        const trendsContent = document.getElementById('trends-content');
+        if (trendsContent) trendsContent.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching trends...';
+
+        try {
+            const res = await fetch('/lab-trends?user_id=default');
+            const data = await res.json();
+            if (trendsContent) trendsContent.innerHTML = marked.parse(data.summary || 'No trends found.');
+        } catch (err) { if (trendsContent) trendsContent.innerHTML = 'Error fetching trends.'; }
+    });
+
+    if (closeTrendsBtn) closeTrendsBtn.addEventListener('click', () => {
+        if (labTrendsSection) labTrendsSection.style.display = 'none';
+    });
+
+
+    // Insurance Concierge Logic
+    if (insuranceBtn) insuranceBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        insuranceModal.classList.add('show');
+    });
+
+    if (closeInsuranceBtn) closeInsuranceBtn.addEventListener('click', () => {
+        insuranceModal.classList.remove('show');
+    });
+
+    if (insuranceModal) insuranceModal.addEventListener('click', (e) => {
+        if (e.target === insuranceModal) insuranceModal.classList.remove('show');
+    });
+
+    if (checkInsuranceBtn) {
+        checkInsuranceBtn.addEventListener('click', async () => {
+            const policyText = policyTextInput.value;
+            const treatmentName = treatmentNameInput.value;
+
+            if (!policyText || !treatmentName) {
+                alert('Please provide both policy text and treatment name.');
+                return;
+            }
+
+            const originalBtnContent = checkInsuranceBtn.innerHTML;
+            checkInsuranceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Auditing Policy...';
+            checkInsuranceBtn.disabled = true;
+            
+            insuranceResult.style.display = 'block';
+            insuranceResult.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-light);"><i class="fas fa-microscope fa-spin" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px; display: block;"></i> <span style="font-weight: 500;">Our AI Policy Auditor is analyzing your coverage...</span></div>';
+
+            const formData = new FormData();
+            formData.append('policy_text', policyText);
+            formData.append('treatment', treatmentName);
+            formData.append('user_id', 'default');
+
+            try {
+                const res = await fetch('/insurance-check', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    renderInsuranceResult(data, treatmentName);
+                } else {
+                    insuranceResult.innerHTML = `<div style="color: #dc2626; padding: 15px; background: #fee2e2; border-radius: 12px; border: 1px solid #fecaca; display: flex; align-items: center; gap: 10px;"><i class="fas fa-exclamation-circle"></i> Error: ${data.message}</div>`;
+                }
+            } catch (err) {
+                console.error("Insurance Audit Error:", err);
+                insuranceResult.innerHTML = `<div style="color: #dc2626; padding: 15px; background: #fee2e2; border-radius: 12px; border: 1px solid #fecaca; display: flex; align-items: center; gap: 10px;"><i class="fas fa-wifi-slash"></i> Audit Error: ${err.message}</div>`;
+            } finally {
+                checkInsuranceBtn.innerHTML = originalBtnContent;
+                checkInsuranceBtn.disabled = false;
+            }
+        });
+    }
+
+    function renderInsuranceResult(data, treatment) {
+        const coverClass = data.is_covered.toLowerCase(); // yes, no, partially
+        const badgeClass = `badge-${coverClass}`;
+        const headerClass = `covered-${coverClass}`;
+
+        insuranceResult.innerHTML = `
+            <div class="insurance-card">
+                <div class="insurance-card-header ${headerClass}">
+                    <h4 style="margin: 0; color: var(--text-color); font-size: 1rem; font-weight: 600;">"${treatment}" Coverage Trace</h4>
+                    <span class="coverage-badge ${badgeClass}">${data.is_covered}</span>
+                </div>
+                <div class="insurance-card-body">
+                    <div class="audit-section">
+                        <span class="audit-label">Policy Analysis Logic</span>
+                        <div class="audit-content">${data.summary_logic}</div>
+                    </div>
+                    
+                    <div class="co-pay-box">
+                        <span style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Estimated Co-pay / Limit</span>
+                        <span class="co-pay-value">${data.estimated_co_pay || 'None Discovered'}</span>
+                    </div>
+
+                    ${data.limitations && data.limitations.length > 0 ? `
+                        <div class="audit-section">
+                            <span class="audit-label" style="color: #f59e0b;"><i class="fas fa-info-circle"></i> Conditions & Waiting Periods</span>
+                            <ul style="padding-left: 20px; margin-top: 5px; color: #4b5563; font-size: 0.85rem;">
+                                ${data.limitations.map(lim => `<li style="margin-bottom: 4px;">${lim}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+
+                    ${data.required_docs && data.required_docs.length > 0 ? `
+                        <div class="audit-section" style="margin-bottom: 0;">
+                            <span class="audit-label" style="color: #4f46e5;"><i class="fas fa-file-medical"></i> Documentation Needed for Claim</span>
+                            <div style="margin-top: 8px;">
+                                ${data.required_docs.map(doc => `<span class="doc-tag">${doc}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    // Symptom Cam Handler
+    if (symptomCamForm) symptomCamForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = symptomImageInput.files[0];
+        if (!file) {
+            alert("Please select a photo first.");
+            return;
+        }
+
+        const originalBtnContent = symptomCamForm.querySelector('button').innerHTML;
+        symptomCamForm.querySelector('button').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+        symptomCamForm.querySelector('button').disabled = true;
+        
+        symptomCamResult.style.display = 'block';
+        symptomCamResult.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-camera fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i><p style="margin-top:10px;">Our AI is examining the symptom photo...</p></div>';
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('symptoms_history', symptomContext.value);
+        formData.append('user_id', 'default');
+
+        try {
+            const res = await fetch('/symptom-cam', { method: 'POST', body: formData });
+            const data = await res.json();
+            renderSymptomCamResult(data);
+        } catch (err) { 
+            symptomCamResult.innerHTML = `<div style="color: #dc2626; padding: 10px; background: #fee2e2; border-radius: 8px;">Error: ${err.message}</div>`;
+        } finally {
+            symptomCamForm.querySelector('button').innerHTML = originalBtnContent;
+            symptomCamForm.querySelector('button').disabled = false;
+        }
+    });
+
+    // Medication Safety Handler
+    if (verifyMedSafetyBtn) verifyMedSafetyBtn.addEventListener('click', async () => {
+        const resultDiv = document.createElement('div');
+        resultDiv.className = 'result-box';
+        resultDiv.style.marginTop = '15px';
+        verifyMedSafetyBtn.parentNode.appendChild(resultDiv);
+        resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running cross-medication safety audit...';
+
+        try {
+            const res = await fetch('/check-medication-safety', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: 'default', medication_name: 'ALL', is_comprehensive: true })
+            });
+            const data = await res.json();
+            if (data.is_safe) {
+                resultDiv.innerHTML = `<div style="color: #059669; padding: 15px; background: #ecfdf5; border-radius: 12px; border: 1px solid #d1fae5;"><i class="fas fa-check-circle"></i> ${data.summary}</div>`;
+            } else {
+                resultDiv.innerHTML = `<div style="color: #dc2626; padding: 15px; background: #fef2f2; border-radius: 12px; border: 1px solid #fee2e2;"><i class="fas fa-exclamation-triangle"></i> <strong>Safety Alert!</strong><br>${marked.parse(data.summary)}</div>`;
+            }
+        } catch (err) { 
+            resultDiv.innerHTML = `<div style="color: #dc2626; padding: 10px; background: #fee2e2; border-radius: 8px;">Error: ${err.message}</div>`;
+        }
+    });
+});

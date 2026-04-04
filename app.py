@@ -12,6 +12,15 @@ from lab_test_analyzer import get_lab_test_analyzer
 from challenges_manager import get_challenges_manager
 import os
 import json
+from medication_safety import get_medication_safety_checker
+from environmental_sync import get_environmental_sync
+from food_safety_scanner import get_food_safety_scanner
+from grocery_auditor import get_grocery_auditor
+from triage_engine import get_triage_engine
+from symptom_cam_analyzer import get_symptom_cam_analyzer
+from digital_twin import get_digital_twin
+from insurance_concierge import get_insurance_concierge
+from first_aid_guide import get_first_aid_guide
 
 app = Flask(__name__)
 
@@ -30,6 +39,15 @@ language_support = get_language_support()
 lab_test_handler = get_lab_test_handler()
 lab_test_analyzer = get_lab_test_analyzer()
 challenges_manager = get_challenges_manager()
+medication_safety = get_medication_safety_checker()
+env_sync = get_environmental_sync()
+food_scanner = get_food_safety_scanner()
+grocery_auditor = get_grocery_auditor()
+triage_engine = get_triage_engine()
+symptom_cam = get_symptom_cam_analyzer()
+digital_twin = get_digital_twin()
+insurance_concierge = get_insurance_concierge()
+first_aid = get_first_aid_guide()
 
 UPLOAD_FOLDER = 'uploads/prescriptions'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
@@ -121,13 +139,27 @@ def chat():
                 user_language
             )
         
-        # Track chat interaction (store in user's language)
+        # Track chat interaction (store in user_language)
         profile.add_chat_interaction(user_message, response)
+        
+        # Ambient Distress Detection (Phase 4)
+        distress_detected = emergency_support.detect_distress_keywords(message_in_english)
+        
+        # Proactive Safety Check for medications mentioned
+        safety_analysis = None
+        if any(keyword in message_in_english.lower() for keyword in ['take', 'start', 'medication', 'drug']):
+             safety_analysis = medication_safety.check_interactions([message_in_english], profile.to_dict())
+             if safety_analysis.get('status') in ['caution', 'danger']:
+                 # We keep it separate for UI to handle as a warning
+                 pass
+        
         profile_manager.save_profiles()
         
         return jsonify({
             "response": response,
             "symptom_analysis": symptom_analysis,
+            "safety_analysis": safety_analysis,
+            "distress_detected": distress_detected,
             "detected_language": user_language
         })
     except Exception as e:
@@ -258,11 +290,20 @@ def proactive_alerts():
     
     try:
         profile = profile_manager.get_profile(user_id)
-        alerts = wellness_guide.get_proactive_alerts(profile.to_dict())
+        
+        # Get environmental data if coordinates provided
+        lat = request.args.get('lat')
+        lon = request.args.get('lon')
+        env_data = None
+        if lat and lon:
+            env_data = env_sync.get_environmental_data(float(lat), float(lon))
+        
+        alerts = wellness_guide.get_proactive_alerts(profile.to_dict(), env_data)
         
         return jsonify({
             "alerts": alerts,
-            "count": len(alerts)
+            "count": len(alerts),
+            "environmental_context": env_data if env_data else "No location provided"
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -383,9 +424,16 @@ def upload_prescription():
         profile.add_prescription(prescription)
         profile_manager.save_profiles()
         
+        # Run Medication Safety Check
+        safety_check = medication_safety.check_interactions(
+            prescription.get('medications', []), 
+            profile.to_dict()
+        )
+        
         return jsonify({
             "success": True,
-            "prescription": prescription
+            "prescription": prescription,
+            "safety_check": safety_check
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -627,6 +675,27 @@ def delete_lab_report(report_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/lab-trends', methods=['GET'])
+def get_lab_trends():
+    """Get laboratory test trends over time."""
+    user_id = request.args.get('user_id', 'default')
+    
+    try:
+        profile = profile_manager.get_profile(user_id)
+        lab_reports = profile.get_lab_reports()
+        
+        if not lab_reports:
+            return jsonify({"trends": {}, "message": "No lab reports found for trend analysis."})
+            
+        trends = lab_test_analyzer.get_parameter_trends(lab_reports)
+        
+        return jsonify({
+            "trends": trends,
+            "count": len(lab_reports)
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/lab-test-chat', methods=['POST'])
 def lab_test_chat():
     """Dedicated chat endpoint for lab test questions."""
@@ -783,6 +852,155 @@ def log_challenge_progress():
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/scan-food', methods=['POST'])
+def scan_food():
+    """Scan food ingredients from image and provide audit."""
+    user_id = request.form.get('user_id', 'default')
+    
+    if 'image' not in request.files:
+        return jsonify({"error": "No image provided"}), 400
+        
+    file = request.files['image']
+    if not os.path.exists('uploads/nutrition'):
+        os.makedirs('uploads/nutrition')
+        
+    filename = secure_filename(file.filename)
+    temp_path = os.path.join('uploads/nutrition', f"food_{filename}")
+    file.save(temp_path)
+    
+    try:
+        profile = profile_manager.get_profile(user_id)
+        audit = food_scanner.audit_food_image(temp_path, profile.to_dict())
+        
+        # Clean up
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        return jsonify(audit)
+    except Exception as e:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/audit-receipt', methods=['POST'])
+def audit_receipt():
+    """Audit grocery receipt from image and provide health score."""
+    user_id = request.form.get('user_id', 'default')
+    
+    if 'image' not in request.files:
+        return jsonify({"error": "No image provided"}), 400
+        
+    file = request.files['image']
+    if not os.path.exists('uploads/nutrition'):
+        os.makedirs('uploads/nutrition')
+        
+    filename = secure_filename(file.filename)
+    temp_path = os.path.join('uploads/nutrition', f"receipt_{filename}")
+    file.save(temp_path)
+    
+    try:
+        profile = profile_manager.get_profile(user_id)
+        audit = grocery_auditor.analyze_receipt_image(temp_path, profile.to_dict())
+        
+        # Clean up
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        return jsonify(audit)
+    except Exception as e:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/triage', methods=['POST'])
+def triage():
+    """Conduct advanced clinical triage."""
+    data = request.json
+    user_id = data.get('user_id', 'default')
+    symptom_analysis = data.get('symptom_analysis')
+    
+    if not symptom_analysis:
+        return jsonify({"error": "No symptom analysis provided"}), 400
+        
+    try:
+        profile = profile_manager.get_profile(user_id)
+        triage_report = triage_engine.conduct_triage(symptom_analysis, profile.to_dict())
+        return jsonify(triage_report)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/symptom-cam', methods=['POST'])
+def symptom_cam_analysis():
+    """Analyze a photo of a symptomatic area with context."""
+    user_id = request.form.get('user_id', 'default')
+    symptoms_history = request.form.get('symptoms_history', '')
+    
+    # Check if file is present
+    if 'image' not in request.files:
+        return jsonify({"error": "No image provided"}), 400
+    
+    file = request.files['image']
+    
+    # Save temporarily to analyze
+    if not os.path.exists('uploads/symptoms'):
+        os.makedirs('uploads/symptoms')
+        
+    filename = secure_filename(file.filename)
+    temp_path = os.path.join('uploads/symptoms', f"temp_{filename}")
+    file.save(temp_path)
+    
+    try:
+        # Use the symptom_cam analyzer with the history
+        analysis = symptom_cam.analyze_symptom_image(temp_path, symptoms_history)
+        
+        # Clean up
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        return jsonify(analysis)
+    except Exception as e:
+        # Final cleanup on error
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/simulate-health', methods=['POST'])
+def simulate_health():
+    """Simulate health outcomes for 'What If' scenarios."""
+    data = request.json
+    user_id = data.get('user_id', 'default')
+    choice = data.get('scenario')
+    
+    if not choice:
+        return jsonify({"error": "No scenario provided"}), 400
+        
+    try:
+        profile = profile_manager.get_profile(user_id)
+        simulation = digital_twin.simulate_outcome(profile.to_dict(), choice)
+        return jsonify(simulation)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/insurance-check', methods=['POST'])
+def insurance_check():
+    """Audit insurance policy for treatment coverage."""
+    user_id = request.form.get('user_id', 'default')
+    policy_text = request.form.get('policy_text')
+    treatment = request.form.get('treatment')
+    
+    if not policy_text or not treatment:
+        return jsonify({"error": "Policy text and treatment name required"}), 400
+        
+    try:
+        audit = insurance_concierge.analyze_coverage(policy_text, treatment)
+        return jsonify(audit)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/first-aid', methods=['GET'])
+def get_first_aid():
+    """Get step-by-step first aid instructions."""
+    emergency_type = request.args.get('type', 'general')
+    steps = first_aid.get_step_by_step(emergency_type)
+    return jsonify({"emergency_type": emergency_type, "steps": steps})
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):

@@ -805,6 +805,84 @@ button:hover {
     background-color: #dc2626;
 }
 
+/* --- NEW FEATURE STYLES --- */
+
+.simulation-section {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.simulation-input {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.simulation-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.lab-trends-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.first-aid-chip {
+    padding: 8px 16px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    color: var(--text-color);
+    width: auto!important;
+    height: auto!important;
+    border: 1px solid #ddd;
+}
+
+.first-aid-chip:hover {
+    background: #e2e8f0;
+}
+
+.first-aid-chip.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.result-box {
+    animation: fadeIn 0.3s ease;
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.first-aid-steps .step {
+    border-left: 3px solid var(--primary-color);
+    padding: 12px;
+    margin-bottom: 12px;
+    background: #fff;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
 .btn-secondary {
     display: flex;
     align-items: center;
@@ -2411,4 +2489,118 @@ body.dark-mode .prescription-text-details pre {
         font-size: 1.8rem;
         margin-bottom: 0;
     }
+}
+
+/* Urgency Badges for Symptom Cam */
+.urgency-badge.emergency {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.urgency-badge.urgent {
+    background-color: #ffedd5;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+}
+
+.urgency-badge.routine {
+    background-color: #f0f9ff;
+    color: #0284c7;
+    border: 1px solid #bae6fd;
+}
+
+/* Insurance Concierge Results */
+.insurance-result {
+    margin-top: 20px;
+    animation: fadeIn 0.4s ease;
+}
+
+.insurance-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.insurance-card-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid transparent;
+}
+
+.insurance-card-header.covered-yes { border-bottom-color: #10b981; background: #ecfdf5; }
+.insurance-card-header.covered-partially { border-bottom-color: #f59e0b; background: #fffbeb; }
+.insurance-card-header.covered-no { border-bottom-color: #ef4444; background: #fef2f2; }
+
+.coverage-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-yes { background: #10b981; color: white; }
+.badge-partially { background: #f59e0b; color: white; }
+.badge-no { background: #ef4444; color: white; }
+
+.insurance-card-body {
+    padding: 20px;
+}
+
+.audit-section {
+    margin-bottom: 20px;
+}
+
+.audit-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.audit-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.doc-tag {
+    display: inline-block;
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    border: 1px solid #c7d2fe;
+}
+
+.co-pay-box {
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 8px;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.co-pay-value {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

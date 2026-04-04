@@ -434,7 +434,7 @@ Abnormal Parameters:
         
         try:
             response = self.groq_client.chat.completions.create(
-                model="llama3-8b-8192",
+                model="llama-3.1-8b-instant",
                 messages=[
                     {"role": "system", "content": "You are a helpful medical assistant. Provide clear, simple explanations without medical jargon. Always recommend consulting a doctor for abnormal values."},
                     {"role": "user", "content": prompt}
@@ -484,6 +484,90 @@ Abnormal Parameters:
                 'lifestyle_recommendations': [],
                 'when_to_consult_doctor': ['Consult your doctor to discuss these abnormal results']
             }
+    def get_parameter_trends(self, lab_reports: List[Dict]) -> Dict:
+        """
+        Extract trends for key parameters across multiple lab reports.
+        
+        Args:
+            lab_reports: List of lab report dictionaries from user profile
+            
+        Returns:
+            Dictionary containing trend data for each parameter
+        """
+        if not lab_reports:
+            return {}
+            
+        # Sort reports by date
+        sorted_reports = sorted(
+            lab_reports, 
+            key=lambda x: x.get('upload_date', '')
+        )
+        
+        trends = {}
+        
+        for report in sorted_reports:
+            date = report.get('upload_date', '').split('T')[0]
+            analysis = report.get('analysis', {})
+            parameters = analysis.get('parameters', [])
+            
+            for param in parameters:
+                name = param.get('name')
+                value = param.get('value')
+                unit = param.get('unit', '')
+                
+                if name not in trends:
+                    trends[name] = {
+                        'unit': unit,
+                        'history': []
+                    }
+                
+                trends[name]['history'].append({
+                    'date': date,
+                    'value': value,
+                    'status': param.get('status', 'unknown')
+                })
+        
+        # Add summary for each trend
+        for name, data in trends.items():
+            if len(data['history']) > 1:
+                data['summary'] = self._generate_trend_summary(name, data['history'])
+            else:
+                data['summary'] = "More data points needed to establish a trend."
+                
+        return trends
+
+    def _generate_trend_summary(self, param_name: str, history: List[Dict]) -> str:
+        """Generate a short summary describing the trend direction."""
+        if len(history) < 2:
+            return "Stable (single data point)."
+            
+        first_val = history[0]['value']
+        last_val = history[-1]['value']
+        
+        # Simple direction check
+        if isinstance(first_val, (int, float)) and isinstance(last_val, (int, float)):
+            diff = last_val - first_val
+            percent_change = (diff / first_val * 100) if first_val != 0 else 0
+            
+            direction = "increasing" if diff > 0 else "decreasing"
+            magnitude = "significantly" if abs(percent_change) > 10 else "slightly"
+            
+            if abs(percent_change) < 2:
+                return f"Stable: {param_name} is remaining consistent at around {last_val}."
+            
+            # Contextualize if it's "good" or "bad"
+            # For most markers (except HDL), decreasing is usually good if it was high
+            status_last = history[-1]['status']
+            status_first = history[0]['status']
+            
+            if status_last == 'normal' and status_first != 'normal':
+                return f"Improving: {param_name} has moved into the normal range."
+            elif status_last != 'normal' and status_first == 'normal':
+                return f"Concerning: {param_name} has moved outside the normal range."
+            else:
+                return f"{magnitude.capitalize()} {direction}: {param_name} has changed by {abs(percent_change):.1f}% since the first record."
+
+        return f"Trend available across {len(history)} records."
 
 
 # Singleton instance

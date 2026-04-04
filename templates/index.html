@@ -24,6 +24,10 @@
                 <a href="#" id="pharmacy-btn"><i class="fas fa-prescription-bottle-alt"></i> Pharmacies</a>
                 <a href="#" id="prescriptions-btn"><i class="fas fa-file-prescription"></i> Prescriptions</a>
                 <a href="#" id="lab-tests-btn"><i class="fas fa-flask"></i> Lab Tests</a>
+                <a href="#" id="symptom-cam-btn"><i class="fas fa-camera"></i> Symptom Cam</a>
+                <a href="#" id="nutrition-btn"><i class="fas fa-apple-alt"></i> Nutrition Scan</a>
+                <a href="#" id="insurance-btn"><i class="fas fa-shield-alt"></i> Insurance Hub</a>
+                <a href="#" id="first-aid-btn"><i class="fas fa-first-aid"></i> First Aid Guide</a>
                 <a href="#" id="challenges-btn"><i class="fas fa-trophy"></i> Challenges</a>
                 <a href="#" id="stats-btn"><i class="fas fa-chart-line"></i> Stats</a>
                 <a href="#" id="settings-btn"><i class="fas fa-cog"></i> Settings</a>
@@ -354,6 +358,15 @@
                         Loading...
                     </div>
                 </div>
+                <div class="simulation-section">
+                    <h3><i class="fas fa-robot"></i> Health Digital Twin</h3>
+                    <p>Simulate 'What If' scenarios to see how lifestyle choices impact your future health.</p>
+                    <div class="simulation-input">
+                        <input type="text" id="simulation-scenario" placeholder="e.g., Stop smoking for 1 year">
+                        <button id="run-simulation-btn" class="btn-primary">Predict My Future</button>
+                    </div>
+                    <div id="simulation-result" class="simulation-result"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -385,14 +398,16 @@
                     </form>
                 </div>
 
-                <div class="prescriptions-list-section">
-                    <h3><i class="fas fa-list"></i> Uploaded Prescriptions</h3>
-                    <div id="prescriptions-list" class="prescriptions-list">
-                        <p class="no-data">No prescriptions uploaded yet</p>
-                    </div>
+                <h3>Your Prescriptions</h3>
+                <div id="prescriptions-list" class="prescriptions-list">
+                    <p class="no-data">No prescriptions uploaded yet</p>
                 </div>
+                <button id="verify-med-safety-btn" class="btn btn-warning" style="margin-top: 15px; width: 100%;">
+                    <i class="fas fa-user-shield"></i> Run Cross-Medication Safety Check
+                </button>
             </div>
         </div>
+    </div>
     </div>
     </div>
     </div>
@@ -429,7 +444,21 @@
                             <button type="submit" id="upload-lab-btn" class="btn btn-primary">
                                 <i class="fas fa-upload"></i> Upload & Analyze
                             </button>
+                            <button type="button" id="view-lab-trends-btn" class="btn btn-secondary"
+                                style="margin-top: 10px; width: 100%;">
+                                <i class="fas fa-chart-line"></i> View Longitudinal Trends
+                            </button>
                         </form>
+                    </div>
+
+                    <div id="lab-trends-section" class="lab-trends-section" style="display: none;">
+                        <div class="analysis-header">
+                            <h3><i class="fas fa-chart-area"></i> Parameter Trends</h3>
+                            <button id="close-trends-btn" class="btn-icon"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div id="trends-content" class="trends-content">
+                            <!-- Trends data will be loaded here -->
+                        </div>
                     </div>
 
                     <!-- Reports List Section -->
@@ -586,8 +615,121 @@
     </div>
 
 
+    <!-- Nutrition Hub Modal -->
+    <div id="nutrition-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-apple-alt"></i> Personalized Nutrition Hub</h2>
+                <span class="close-nutrition">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="nutrition-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="nutrition-card" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                        <h3><i class="fas fa-barcode"></i> FSSAI Food Scanner</h3>
+                        <p>Scan ingredient labels to check for additives and personal risks.</p>
+                        <form id="food-scanner-form">
+                            <input type="file" id="food-image" accept="image/*" class="form-control"
+                                style="margin: 10px 0;">
+                            <div id="food-preview-container" class="file-preview" style="display: none; margin-bottom: 10px; text-align: center;">
+                                <img id="food-preview" src="" alt="Food label preview" style="max-width: 100%; max-height: 150px; border-radius: 8px;">
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%;">Scan Ingredients</button>
+                        </form>
+                        <div id="food-scan-result" class="scan-result" style="margin-top: 15px; display: none;"></div>
+                    </div>
+                    <div class="nutrition-card" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                        <h3><i class="fas fa-receipt"></i> Grocery Receipt Auditor</h3>
+                        <p>Scan your shopping receipt for a health score and better swaps.</p>
+                        <form id="receipt-auditor-form">
+                            <input type="file" id="receipt-image" accept="image/*" class="form-control"
+                                style="margin: 10px 0;">
+                            <div id="receipt-preview-container" class="file-preview" style="display: none; margin-bottom: 10px; text-align: center;">
+                                <img id="receipt-preview" src="" alt="Receipt preview" style="max-width: 100%; max-height: 150px; border-radius: 8px;">
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: 100%;">Audit Basket</button>
+                        </form>
+                        <div id="receipt-audit-result" class="scan-result" style="margin-top: 15px; display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insurance Concierge Modal -->
+    <div id="insurance-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-shield-alt"></i> AI Insurance Concierge</h2>
+                <span class="close-insurance">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Paste Policy Text / Excerpts</label>
+                    <textarea id="policy-text" rows="5" class="form-control" style="width: 100%;"
+                        placeholder="Paste relevant sections from your policy document..."></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Treatment / Test to Check</label>
+                    <input type="text" id="treatment-name" class="form-control" style="width: 100%;"
+                        placeholder="e.g., MRI, Dialysis, Surgery">
+                </div>
+                <button id="check-insurance-btn" class="btn-primary" style="width: 100%;">Audit Coverage</button>
+                <div id="insurance-result" class="insurance-result" style="margin-top: 15px; display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- First Aid Guide Modal -->
+    <div id="first-aid-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-first-aid"></i> AR First Aid Guide</h2>
+                <span class="close-first-aid">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="first-aid-selector" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="first-aid-chip" data-type="cpr">CPR</button>
+                    <button class="first-aid-chip" data-type="heimlich">Heimlich</button>
+                    <button class="first-aid-chip" data-type="bleeding">Bleeding</button>
+                </div>
+                <div id="first-aid-steps" class="first-aid-steps">
+                    <p class="no-data">Select an emergency type for instructions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Symptom Cam Modal -->
+    <div id="symptom-cam-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-camera"></i> Multimodal Symptom Cam</h2>
+                <span class="close-symptom-cam">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="symptom-cam-upload">
+                    <p>Upload a clear photo of the symptom (e.g., skin rash, eye redness, swelling).</p>
+                    <form id="symptom-cam-form">
+                        <textarea id="symptom-context" class="form-control"
+                            placeholder="Describe how long you've had this and any other symptoms..."
+                            style="margin-bottom: 10px;"></textarea>
+                        <input type="file" id="symptom-image" accept="image/*" class="form-control"
+                            style="margin-bottom: 20px;">
+                        <div id="symptom-file-preview" class="file-preview" style="display: none; margin-bottom: 15px; text-align: center;">
+                            <img id="symptom-preview-image" src="" alt="Symptom preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        </div>
+                        <button type="submit" id="analyze-symptom-btn" class="btn-primary" style="width: 100%;">
+                            <i class="fas fa-search-plus"></i> Analyze Symptom Photo
+                        </button>
+                    </form>
+                    <div id="symptom-cam-result" class="scan-result" style="margin-top: 20px; display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}?v={{ range(1, 10000) | random }}"></script>
 </body>
 
 </html>
