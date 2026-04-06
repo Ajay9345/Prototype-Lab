@@ -2,6 +2,8 @@ flask
 langchain
 langchain-groq
 langchain-community
+langchain-core
+langchain-huggingface
 faiss-cpu
 python-dotenv
 sentence-transformers
@@ -10,3 +12,5 @@ pytesseract
 Pillow
 deep-translator
 langdetect
+groq
+requests

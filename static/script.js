@@ -113,7 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const labTrendsSection = document.getElementById('lab-trends-section');
     const closeTrendsBtn = document.getElementById('close-trends-btn');
 
-    const runSimulationBtn = document.getElementById('run-simulation-btn');
+    const digitalTwinBtn = document.getElementById('digital-twin-btn');
+    const digitalTwinModal = document.getElementById('digital-twin-modal');
+    const closeDigitalTwinBtn = document.querySelector('.close-digital-twin');
 
     const symptomCamBtn = document.getElementById('symptom-cam-btn');
     const symptomCamModal = document.getElementById('symptom-cam-modal');
@@ -1803,6 +1805,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Challenges Modal Functionality
+    const challengesBtn = document.getElementById('challenges-btn');
+    const challengesModal = document.getElementById('challenges-modal');
+    const closeChallengesBtn = document.querySelector('.close-challenges');
+
     challengesBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         await loadChallenges();
@@ -2105,25 +2111,183 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    // Digital Twin Modal open/close
+    if (digitalTwinBtn) digitalTwinBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        digitalTwinModal.classList.add('show');
+    });
+
+    if (closeDigitalTwinBtn) closeDigitalTwinBtn.addEventListener('click', () => {
+        digitalTwinModal.classList.remove('show');
+    });
+
+    if (digitalTwinModal) digitalTwinModal.addEventListener('click', (e) => {
+        if (e.target === digitalTwinModal) digitalTwinModal.classList.remove('show');
+    });
+
+    // Sim chips — populate the input field
+    document.querySelectorAll('.sim-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const scenarioInput = document.getElementById('simulation-scenario');
+            if (scenarioInput) scenarioInput.value = chip.dataset.scenario;
+        });
+    });
+
     // Digital Twin Handler
     const runSimBtn = document.getElementById('run-simulation-btn');
     if (runSimBtn) runSimBtn.addEventListener('click', async () => {
-        const scenario = document.getElementById('simulation-scenario').value;
-        if (!scenario) return;
-        const resultDiv = document.getElementById('simulation-result');
-        resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running simulation...';
+        const scenarioInput = document.getElementById('simulation-scenario');
+        const scenario = scenarioInput.value.trim();
+        if (!scenario) {
+            scenarioInput.focus();
+            return;
+        }
+
+        const resultDiv    = document.getElementById('simulation-result');
+        const modalContent = document.querySelector('#digital-twin-modal .modal-content');
+        const originalHtml = runSimBtn.innerHTML;
+
+        // Show loading
+        runSimBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Simulating...';
+        runSimBtn.disabled  = true;
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <div style="text-align:center;padding:25px;color:#6b7280;">
+                <i class="fas fa-dna fa-spin" style="font-size:2rem;color:var(--primary-color);display:block;margin-bottom:12px;"></i>
+                <strong>Running your Digital Twin simulation...</strong>
+                <p style="font-size:0.85rem;margin-top:6px;">Analysing lifestyle impact on your health profile</p>
+            </div>`;
+
+        // Scroll the modal's own scrollable container to the bottom
+        if (modalContent) modalContent.scrollTop = modalContent.scrollHeight;
 
         try {
-            const res = await fetch('/simulate-health', {
+            const res  = await fetch('/simulate-health', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: 'default', scenario: scenario })
+                body: JSON.stringify({ user_id: 'default', scenario })
             });
             const data = await res.json();
-            const timelineHtml = Object.entries(data.timeline || {}).map(([t, desc]) => `<li><strong>${t}:</strong> ${desc}</li>`).join('');
-            resultDiv.innerHTML = `<div class="result-box" style="padding: 10px; background: #f9f9f9; border-radius: 5px;"><strong>Visual Preview:</strong> ${data.visual_preview_desc}<br><ul>${timelineHtml}</ul></div>`;
-        } catch (err) { resultDiv.innerHTML = 'Error running simulation.'; }
+
+            if (data.status === 'error' || data.status === 'fallback') {
+                resultDiv.innerHTML = `<div style="color:#dc2626;padding:12px;background:#fee2e2;border-radius:8px;">
+                    <i class="fas fa-exclamation-circle"></i> ${data.message || 'Simulation failed.'}</div>`;
+            } else {
+                renderSimulationResult(data, scenario, resultDiv);
+            }
+        } catch (err) {
+            resultDiv.innerHTML = `<div style="color:#dc2626;padding:12px;background:#fee2e2;border-radius:8px;">
+                <i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;
+        } finally {
+            runSimBtn.innerHTML = originalHtml;
+            runSimBtn.disabled  = false;
+            // Scroll modal container to bottom so result is visible
+            if (modalContent) modalContent.scrollTop = modalContent.scrollHeight;
+        }
     });
+
+    function renderSimulationResult(data, scenario, container) {
+        // Build physical changes list
+        const changes = data.expected_physical_changes || [];
+        const changesHtml = changes.length
+            ? changes.map(c => `<li style="margin-bottom:6px;"><i class="fas fa-check-circle" style="color:#10b981;margin-right:6px;"></i>${c}</li>`).join('')
+            : '<li style="color:#6b7280;">No specific changes listed.</li>';
+
+        // Build timeline — handle both object and string formats
+        const timeline = data.timeline || {};
+        let timelineHtml = '';
+        if (typeof timeline === 'object' && !Array.isArray(timeline)) {
+            const timeKeys = ['1 week', '1 month', '6 months', '1 year'];
+            // Try known keys first, then fall back to whatever keys exist
+            const keys = timeKeys.filter(k => timeline[k]) .length > 0
+                ? timeKeys.filter(k => timeline[k])
+                : Object.keys(timeline);
+            timelineHtml = keys.map(key => {
+                const val = timeline[key];
+                const desc = typeof val === 'object' ? Object.values(val).join(', ') : val;
+                return `
+                    <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;">
+                        <span style="min-width:80px;font-weight:700;font-size:0.78rem;color:var(--primary-color);text-transform:uppercase;padding-top:2px;">${key}</span>
+                        <span style="font-size:0.88rem;color:#374151;line-height:1.5;">${desc}</span>
+                    </div>`;
+            }).join('');
+        } else if (typeof timeline === 'string') {
+            timelineHtml = `<p style="font-size:0.88rem;color:#374151;">${timeline}</p>`;
+        }
+
+        // Risk reduction
+        const riskReduction = data.risk_reduction;
+        let riskHtml = '';
+        if (riskReduction) {
+            if (typeof riskReduction === 'object') {
+                riskHtml = Object.entries(riskReduction)
+                    .map(([condition, pct]) => `
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f3f4f6;">
+                            <span style="font-size:0.85rem;color:#374151;">${condition}</span>
+                            <span style="font-weight:700;color:#10b981;font-size:0.9rem;">${pct}</span>
+                        </div>`).join('');
+            } else {
+                riskHtml = `<p style="font-size:0.88rem;color:#374151;">${riskReduction}</p>`;
+            }
+        }
+
+        container.innerHTML = `
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;overflow:hidden;margin-top:16px;box-shadow:0 4px 15px rgba(0,0,0,0.06);">
+
+                <!-- Header -->
+                <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:16px 20px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <i class="fas fa-dna" style="color:#fff;font-size:1.3rem;"></i>
+                        <div>
+                            <div style="color:#fff;font-weight:700;font-size:0.95rem;">Digital Twin Simulation</div>
+                            <div style="color:rgba(255,255,255,0.8);font-size:0.78rem;margin-top:2px;">Scenario: ${scenario}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding:18px 20px;">
+
+                    <!-- Visual preview -->
+                    ${data.visual_preview_desc ? `
+                    <div style="background:#f0fdf4;border-left:4px solid #10b981;padding:12px 15px;border-radius:0 8px 8px 0;margin-bottom:18px;">
+                        <div style="font-size:0.75rem;font-weight:700;color:#10b981;text-transform:uppercase;margin-bottom:4px;">Health Preview</div>
+                        <p style="margin:0;font-size:0.9rem;color:#1e293b;line-height:1.5;">${data.visual_preview_desc}</p>
+                    </div>` : ''}
+
+                    <!-- Physical changes -->
+                    <div style="margin-bottom:18px;">
+                        <h5 style="font-size:0.8rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">
+                            <i class="fas fa-heartbeat" style="color:#ef4444;margin-right:6px;"></i>Expected Physical Changes
+                        </h5>
+                        <ul style="list-style:none;padding:0;margin:0;">${changesHtml}</ul>
+                    </div>
+
+                    <!-- Timeline -->
+                    ${timelineHtml ? `
+                    <div style="margin-bottom:18px;">
+                        <h5 style="font-size:0.8rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">
+                            <i class="fas fa-calendar-alt" style="color:#6366f1;margin-right:6px;"></i>Timeline
+                        </h5>
+                        <div style="background:#f8fafc;border-radius:8px;padding:14px;">${timelineHtml}</div>
+                    </div>` : ''}
+
+                    <!-- Risk reduction -->
+                    ${riskHtml ? `
+                    <div>
+                        <h5 style="font-size:0.8rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">
+                            <i class="fas fa-shield-alt" style="color:#f59e0b;margin-right:6px;"></i>Risk Reduction
+                        </h5>
+                        <div style="background:#fffbeb;border-radius:8px;padding:10px 14px;">${riskHtml}</div>
+                    </div>` : ''}
+
+                </div>
+
+                <!-- Disclaimer -->
+                <div style="padding:10px 20px;background:#f9fafb;border-top:1px solid #f3f4f6;font-size:0.72rem;color:#9ca3af;text-align:center;">
+                    <i class="fas fa-info-circle"></i> AI-generated prediction for educational purposes. Consult a doctor before making health decisions.
+                </div>
+            </div>`;
+    }
 
     // Lab Trends Handler
     if (viewLabTrendsBtn) viewLabTrendsBtn.addEventListener('click', async () => {
@@ -2202,41 +2366,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderInsuranceResult(data, treatment) {
-        const coverClass = data.is_covered.toLowerCase(); // yes, no, partially
-        const badgeClass = `badge-${coverClass}`;
+        const coverClass = (data.is_covered || 'unknown').toLowerCase();
+        const badgeClass  = `badge-${coverClass}`;
         const headerClass = `covered-${coverClass}`;
+
+        // Normalise fields — AI sometimes returns a string instead of an array
+        const toArray = v => {
+            if (!v) return [];
+            if (Array.isArray(v)) return v;
+            // Single string — wrap it
+            return [String(v)];
+        };
+        const limitations   = toArray(data.limitations);
+        const required_docs = toArray(data.required_docs);
 
         insuranceResult.innerHTML = `
             <div class="insurance-card">
                 <div class="insurance-card-header ${headerClass}">
-                    <h4 style="margin: 0; color: var(--text-color); font-size: 1rem; font-weight: 600;">"${treatment}" Coverage Trace</h4>
-                    <span class="coverage-badge ${badgeClass}">${data.is_covered}</span>
+                    <h4 style="margin:0;color:var(--text-color);font-size:1rem;font-weight:600;">
+                        "${treatment}" Coverage Trace
+                    </h4>
+                    <span class="coverage-badge ${badgeClass}">${data.is_covered || 'Unknown'}</span>
                 </div>
                 <div class="insurance-card-body">
                     <div class="audit-section">
                         <span class="audit-label">Policy Analysis Logic</span>
-                        <div class="audit-content">${data.summary_logic}</div>
+                        <div class="audit-content">${data.summary_logic || 'No details available.'}</div>
                     </div>
-                    
+
                     <div class="co-pay-box">
-                        <span style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Estimated Co-pay / Limit</span>
+                        <span style="font-size:0.85rem;color:var(--text-light);font-weight:500;">Estimated Co-pay / Limit</span>
                         <span class="co-pay-value">${data.estimated_co_pay || 'None Discovered'}</span>
                     </div>
 
-                    ${data.limitations && data.limitations.length > 0 ? `
+                    ${limitations.length > 0 ? `
                         <div class="audit-section">
-                            <span class="audit-label" style="color: #f59e0b;"><i class="fas fa-info-circle"></i> Conditions & Waiting Periods</span>
-                            <ul style="padding-left: 20px; margin-top: 5px; color: #4b5563; font-size: 0.85rem;">
-                                ${data.limitations.map(lim => `<li style="margin-bottom: 4px;">${lim}</li>`).join('')}
+                            <span class="audit-label" style="color:#f59e0b;">
+                                <i class="fas fa-info-circle"></i> Conditions &amp; Waiting Periods
+                            </span>
+                            <ul style="padding-left:20px;margin-top:5px;color:#4b5563;font-size:0.85rem;">
+                                ${limitations.map(lim => `<li style="margin-bottom:4px;">${lim}</li>`).join('')}
                             </ul>
                         </div>
                     ` : ''}
 
-                    ${data.required_docs && data.required_docs.length > 0 ? `
-                        <div class="audit-section" style="margin-bottom: 0;">
-                            <span class="audit-label" style="color: #4f46e5;"><i class="fas fa-file-medical"></i> Documentation Needed for Claim</span>
-                            <div style="margin-top: 8px;">
-                                ${data.required_docs.map(doc => `<span class="doc-tag">${doc}</span>`).join('')}
+                    ${required_docs.length > 0 ? `
+                        <div class="audit-section" style="margin-bottom:0;">
+                            <span class="audit-label" style="color:#4f46e5;">
+                                <i class="fas fa-file-medical"></i> Documentation Needed for Claim
+                            </span>
+                            <div style="margin-top:8px;">
+                                ${required_docs.map(doc => `<span class="doc-tag">${doc}</span>`).join('')}
                             </div>
                         </div>
                     ` : ''}

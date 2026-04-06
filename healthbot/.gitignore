@@ -1,8 +1,0 @@
-__pycache__/
-*.pyc
-uploads/
-faiss_index/
-uploads/
-*.jpeg
-*.jpg
-*.png
