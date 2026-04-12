@@ -13,11 +13,6 @@ SYSTEM_PROMPT = (
 
 
 class InsuranceConcierge:
-    """
-    Analyses health insurance policy text to determine whether a specific
-    treatment or diagnostic is covered, and what the claim requirements are.
-    """
-
     def __init__(self):
         try:
             api_key = os.getenv("GROQ_API_KEY")
@@ -26,17 +21,6 @@ class InsuranceConcierge:
             self.groq_client = None
 
     def analyze_coverage(self, policy_text: str, treatment: str) -> Dict:
-        """
-        Check whether `treatment` is covered by the given policy text.
-
-        Args:
-            policy_text: Raw text of the insurance policy document.
-            treatment:   Name of the treatment or diagnostic to check.
-
-        Returns:
-            Dict with is_covered, estimated_co_pay, limitations,
-            required_docs, summary_logic, status.
-        """
         if not policy_text or not treatment:
             return {"status": "error", "message": "Policy text and treatment name are required."}
 
@@ -70,7 +54,6 @@ class InsuranceConcierge:
                 response_format={"type": "json_object"},
             )
             result = json.loads(response.choices[0].message.content)
-            # Ensure list fields are always arrays, not strings
             for field in ("limitations", "required_docs"):
                 if field in result and not isinstance(result[field], list):
                     result[field] = [result[field]] if result[field] else []
@@ -80,12 +63,10 @@ class InsuranceConcierge:
             return {"status": "error", "message": f"Policy audit failed: {e}"}
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[InsuranceConcierge] = None
 
 
 def get_insurance_concierge() -> InsuranceConcierge:
-    """Return the shared InsuranceConcierge instance."""
     global _instance
     if _instance is None:
         _instance = InsuranceConcierge()

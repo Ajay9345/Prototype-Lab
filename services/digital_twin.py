@@ -12,11 +12,6 @@ SYSTEM_PROMPT = (
 
 
 class HealthDigitalTwin:
-    """
-    Simulates predictive health outcomes for 'What If' lifestyle scenarios.
-    Example: "What if I quit smoking for 1 year?"
-    """
-
     def __init__(self):
         try:
             api_key = os.getenv("GROQ_API_KEY")
@@ -25,17 +20,6 @@ class HealthDigitalTwin:
             self.groq_client = None
 
     def simulate_outcome(self, user_profile: Dict, scenario: str) -> Dict:
-        """
-        Predict health outcomes for a given lifestyle scenario.
-
-        Args:
-            user_profile: User's health profile dict.
-            scenario:     Description of the hypothetical change (e.g. "Stop smoking").
-
-        Returns:
-            Dict with expected_physical_changes, timeline, risk_reduction,
-            visual_preview_desc.
-        """
         if not scenario:
             return {"status": "error", "message": "No scenario provided for simulation."}
 
@@ -45,9 +29,9 @@ class HealthDigitalTwin:
                 "simulation": "Prediction requires AI model. General advice: Quitting smoking improves heart health within weeks.",
             }
 
-        age        = user_profile.get("age", "Unknown")
+        age = user_profile.get("age", "Unknown")
         conditions = ", ".join(user_profile.get("conditions", [])) or "None"
-        meds       = ", ".join(user_profile.get("medications", [])) or "None"
+        meds = ", ".join(user_profile.get("medications", [])) or "None"
 
         prompt = (
             f"You are a predictive health scientist. Generate a Digital Twin Simulation.\n\n"
@@ -76,12 +60,10 @@ class HealthDigitalTwin:
             return {"status": "error", "message": f"Simulation failed: {e}"}
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[HealthDigitalTwin] = None
 
 
 def get_digital_twin() -> HealthDigitalTwin:
-    """Return the shared HealthDigitalTwin instance."""
     global _instance
     if _instance is None:
         _instance = HealthDigitalTwin()

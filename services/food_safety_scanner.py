@@ -8,12 +8,6 @@ VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 
 
 class FoodSafetyScanner:
-    """
-    Analyses a photo of a food ingredient label using a vision LLM.
-    Grades the product (Green/Yellow/Red), flags FSSAI violations,
-    and personalises the audit based on the user's allergies and conditions.
-    """
-
     def __init__(self):
         try:
             api_key = os.getenv("GROQ_API_KEY")
@@ -24,23 +18,13 @@ class FoodSafetyScanner:
         self.fssai_context = self._load_fssai_guidelines()
 
     def audit_food_image(self, image_path: str, user_profile: Dict) -> Dict:
-        """
-        Analyse a food ingredient label image and return a safety audit.
-
-        Args:
-            image_path:   Path to the saved image file.
-            user_profile: User's health profile (allergies, conditions).
-
-        Returns:
-            Dict with grade, risks, fssai_violations, alternatives, summary, status.
-        """
         if not os.path.exists(image_path):
             return {"status": "error", "message": "Image file not found."}
 
         if not self.groq_client:
             return {"status": "warning", "grade": "Unknown", "message": "AI Audit Engine unavailable. Check labels manually for allergens."}
 
-        allergies  = ", ".join(user_profile.get("allergies", [])) or "None"
+        allergies = ", ".join(user_profile.get("allergies", [])) or "None"
         conditions = ", ".join(user_profile.get("conditions", [])) or "None"
 
         prompt = (
@@ -67,10 +51,7 @@ class FoodSafetyScanner:
         except Exception as e:
             return {"status": "error", "message": f"Audit failed: {e}"}
 
-    # ── Private helpers ───────────────────────────────────────────────────────
-
     def _load_fssai_guidelines(self) -> str:
-        """Load FSSAI guidelines text (first 5000 chars) for prompt context."""
         try:
             with open("data/fssai_guidelines.txt", "r") as f:
                 return f.read()[:5000]
@@ -78,12 +59,10 @@ class FoodSafetyScanner:
             return "FSSAI guidelines not found."
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[FoodSafetyScanner] = None
 
 
 def get_food_safety_scanner() -> FoodSafetyScanner:
-    """Return the shared FoodSafetyScanner instance."""
     global _instance
     if _instance is None:
         _instance = FoodSafetyScanner()

@@ -8,12 +8,6 @@ VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 
 
 class GroceryAuditor:
-    """
-    Analyses a grocery receipt photo using a vision LLM.
-    Calculates a Basket Health Score and suggests healthier swaps
-    personalised to the user's conditions and goals.
-    """
-
     def __init__(self):
         try:
             api_key = os.getenv("GROQ_API_KEY")
@@ -22,17 +16,6 @@ class GroceryAuditor:
             self.groq_client = None
 
     def analyze_receipt_image(self, image_path: str, user_profile: Dict) -> Dict:
-        """
-        Analyse a grocery receipt image and return a health audit.
-
-        Args:
-            image_path:   Path to the saved receipt image.
-            user_profile: User's health profile (conditions, goals).
-
-        Returns:
-            Dict with health_score, categorization, red_flags,
-            personalized_advice, swaps, status.
-        """
         if not os.path.exists(image_path):
             return {"status": "error", "message": "Image file not found."}
 
@@ -40,7 +23,7 @@ class GroceryAuditor:
             return {"status": "warning", "health_score": 60, "message": "AI Auditor unavailable. Buy more fresh fruits and vegetables."}
 
         conditions = ", ".join(user_profile.get("conditions", [])) or "None"
-        goals      = ", ".join(user_profile.get("goals", [])) or "None"
+        goals = ", ".join(user_profile.get("goals", [])) or "None"
 
         prompt = (
             "You are a professional nutrition auditor. Analyse the provided grocery receipt photo.\n\n"
@@ -67,12 +50,10 @@ class GroceryAuditor:
             return {"status": "error", "message": f"Audit failed: {e}"}
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[GroceryAuditor] = None
 
 
 def get_grocery_auditor() -> GroceryAuditor:
-    """Return the shared GroceryAuditor instance."""
     global _instance
     if _instance is None:
         _instance = GroceryAuditor()

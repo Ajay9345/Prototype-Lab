@@ -4,26 +4,22 @@ from collections import Counter
 from datetime import datetime
 from typing import Dict, List, Optional
 
-
-# ── Topic keywords used to auto-tag chat messages ─────────────────────────────
 TOPIC_KEYWORDS: Dict[str, List[str]] = {
-    "Emergency":           ["emergency", "urgent", "severe", "chest pain", "can't breathe"],
-    "Symptoms & Diagnosis":["symptom", "pain", "ache", "fever", "cough", "sick", "ill"],
-    "Diet & Nutrition":    ["diet", "food", "eat", "nutrition", "meal"],
-    "Exercise & Fitness":  ["exercise", "workout", "fitness", "gym", "run"],
-    "Sleep & Rest":        ["sleep", "rest", "insomnia", "tired"],
-    "Mental Health":       ["stress", "anxiety", "mental", "mood"],
-    "Medications":         ["medicine", "medication", "drug", "prescription"],
+    "Emergency":            ["emergency", "urgent", "severe", "chest pain", "can't breathe"],
+    "Symptoms & Diagnosis": ["symptom", "pain", "ache", "fever", "cough", "sick", "ill", "unwell"],
+    "Diet & Nutrition":     ["diet", "food", "eat", "nutrition", "meal"],
+    "Exercise & Fitness":   ["exercise", "workout", "fitness", "gym", "run"],
+    "Sleep & Rest":         ["sleep", "rest", "insomnia", "tired"],
+    "Mental Health":        ["stress", "anxiety", "mental", "mood"],
+    "Medications":          ["medicine", "medication", "drug", "prescription"],
 }
 
-# Default user settings applied to every new profile
 DEFAULT_SETTINGS: Dict = {
-    "theme":        "light",
+    "theme":         "light",
     "notifications": True,
     "data_sharing":  False,
 }
 
-# Default challenge state for a new user
 DEFAULT_CHALLENGES: Dict = {
     "active":            {},
     "completed_history": [],
@@ -31,28 +27,10 @@ DEFAULT_CHALLENGES: Dict = {
     "points":            0,
 }
 
-MAX_CHAT_HISTORY = 100  # Keep only the most recent N interactions
+MAX_CHAT_HISTORY = 100
 
 
 class UserProfile:
-    """
-    Stores all health and preference data for a single user.
-
-    Attributes:
-        age:                User's age in years.
-        conditions:         List of medical conditions (e.g. "Diabetes").
-        allergies:          List of known allergies.
-        medications:        List of current medications.
-        goals:              List of health goals (e.g. "Weight Loss").
-        chat_history:       List of past chat interactions.
-        prescriptions:      List of uploaded prescription records.
-        lab_reports:        List of uploaded lab report records.
-        preferred_language: ISO language code (default "en").
-        gender:             "male" or "female" (used for lab reference ranges).
-        challenges:         Gamification data (points, badges, active challenges).
-        settings:           UI/app preferences.
-    """
-
     def __init__(
         self,
         age: Optional[int] = None,
@@ -68,18 +46,17 @@ class UserProfile:
         preferred_language: str = "en",
         gender: str = "male",
     ):
-        self.age                = age
-        self.conditions         = conditions  or []
-        self.allergies          = allergies   or []
-        self.medications        = medications or []
-        self.goals              = goals       or []
-        self.chat_history       = chat_history  or []
-        self.prescriptions      = prescriptions or []
-        self.lab_reports        = lab_reports   or []
+        self.age = age
+        self.conditions = conditions or []
+        self.allergies = allergies or []
+        self.medications = medications or []
+        self.goals = goals or []
+        self.chat_history = chat_history or []
+        self.prescriptions = prescriptions or []
+        self.lab_reports = lab_reports or []
         self.preferred_language = preferred_language
-        self.gender             = gender
+        self.gender = gender
 
-        # Support migrating challenges stored inside settings (legacy data)
         if settings and "challenges" in settings:
             self.challenges = settings.pop("challenges")
         else:
@@ -87,41 +64,25 @@ class UserProfile:
 
         self.settings = settings or dict(DEFAULT_SETTINGS)
 
-    # ── Chat history ──────────────────────────────────────────────────────────
-
-    def add_chat_interaction(
-        self,
-        message: str,
-        response: str,
-        topic: Optional[str] = None,
-    ) -> None:
-        """Append a new chat turn and trim history to MAX_CHAT_HISTORY."""
+    def add_chat_interaction(self, message: str, response: str, topic: Optional[str] = None) -> None:
         self.chat_history.append({
             "timestamp": datetime.now().isoformat(),
             "message":   message,
             "response":  response,
             "topic":     topic or self._detect_topic(message),
         })
-        # Trim oldest entries if we exceed the limit
         if len(self.chat_history) > MAX_CHAT_HISTORY:
             self.chat_history = self.chat_history[-MAX_CHAT_HISTORY:]
 
     def clear_chat_history(self) -> None:
-        """Erase all stored chat interactions."""
         self.chat_history = []
 
     def _detect_topic(self, message: str) -> str:
-        """
-        Guess the topic of a message using simple keyword matching.
-        Falls back to 'General Health' if no keywords match.
-        """
         message_lower = message.lower()
         for topic, keywords in TOPIC_KEYWORDS.items():
             if any(kw in message_lower for kw in keywords):
                 return topic
         return "General Health"
-
-    # ── Prescriptions ─────────────────────────────────────────────────────────
 
     def add_prescription(self, prescription: Dict) -> None:
         self.prescriptions.append(prescription)
@@ -130,14 +91,11 @@ class UserProfile:
         return self.prescriptions
 
     def delete_prescription(self, prescription_id: str) -> bool:
-        """Remove a prescription by ID. Returns True if found and deleted."""
         for i, rx in enumerate(self.prescriptions):
             if rx.get("id") == prescription_id:
                 self.prescriptions.pop(i)
                 return True
         return False
-
-    # ── Lab reports ───────────────────────────────────────────────────────────
 
     def add_lab_report(self, lab_report: Dict) -> None:
         self.lab_reports.append(lab_report)
@@ -146,21 +104,16 @@ class UserProfile:
         return self.lab_reports
 
     def delete_lab_report(self, report_id: str) -> bool:
-        """Remove a lab report by ID. Returns True if found and deleted."""
         for i, report in enumerate(self.lab_reports):
             if report.get("id") == report_id:
                 self.lab_reports.pop(i)
                 return True
         return False
 
-    # ── Statistics ────────────────────────────────────────────────────────────
-
     def get_statistics(self) -> Dict:
-        """Return a summary of the user's activity and profile completeness."""
         topics = [chat.get("topic", "General Health") for chat in self.chat_history]
         topic_counts = Counter(topics)
 
-        # Profile completion: how many of the 5 key fields are filled
         key_fields = [self.age, self.conditions, self.allergies, self.medications, self.goals]
         filled = sum(1 for f in key_fields if f)
         completion_pct = int((filled / len(key_fields)) * 100)
@@ -179,10 +132,7 @@ class UserProfile:
             },
         }
 
-    # ── Serialisation ─────────────────────────────────────────────────────────
-
     def to_dict(self) -> Dict:
-        """Convert the profile to a plain dictionary (for JSON storage)."""
         return {
             "age":                self.age,
             "conditions":         self.conditions,
@@ -200,7 +150,6 @@ class UserProfile:
 
     @classmethod
     def from_dict(cls, data: Dict) -> "UserProfile":
-        """Reconstruct a UserProfile from a stored dictionary."""
         return cls(
             age=data.get("age"),
             conditions=data.get("conditions", []),
@@ -217,10 +166,6 @@ class UserProfile:
         )
 
     def to_context_string(self) -> str:
-        """
-        Format the profile as a human-readable string to inject into LLM prompts.
-        Returns an empty string if no meaningful data is present.
-        """
         has_data = any([
             self.age, self.conditions, self.allergies,
             self.medications, self.goals, self.prescriptions,
@@ -241,7 +186,6 @@ class UserProfile:
         if self.goals:
             lines.append(f"- Health Goals: {', '.join(self.goals)}")
 
-        # Include a brief summary of each prescription on file
         if self.prescriptions:
             lines.append("\nPrescriptions on File:")
             for i, rx in enumerate(self.prescriptions, 1):
@@ -257,38 +201,23 @@ class UserProfile:
 
 
 class ProfileManager:
-    """
-    Persists and retrieves UserProfile objects from a JSON file.
-
-    Usage:
-        manager = ProfileManager()
-        profile = manager.get_profile("user_123")
-        profile.age = 30
-        manager.save_profiles()
-    """
-
     def __init__(self, storage_path: str = "user_profiles.json"):
         self.storage_path = storage_path
         self.profiles: Dict[str, UserProfile] = {}
         self._load_profiles()
 
     def _load_profiles(self) -> None:
-        """Read all profiles from the JSON file into memory."""
         if not os.path.exists(self.storage_path):
             return
         try:
             with open(self.storage_path, "r") as f:
                 raw = json.load(f)
-            self.profiles = {
-                uid: UserProfile.from_dict(data)
-                for uid, data in raw.items()
-            }
+            self.profiles = {uid: UserProfile.from_dict(data) for uid, data in raw.items()}
         except Exception as e:
             print(f"Error loading profiles: {e}")
             self.profiles = {}
 
     def save_profiles(self) -> None:
-        """Write all in-memory profiles back to the JSON file."""
         try:
             data = {uid: profile.to_dict() for uid, profile in self.profiles.items()}
             with open(self.storage_path, "w") as f:
@@ -297,13 +226,11 @@ class ProfileManager:
             print(f"Error saving profiles: {e}")
 
     def get_profile(self, user_id: str = "default") -> UserProfile:
-        """Return the profile for `user_id`, creating a blank one if needed."""
         if user_id not in self.profiles:
             self.profiles[user_id] = UserProfile()
         return self.profiles[user_id]
 
     def update_profile(self, profile_data: Dict, user_id: str = "default") -> UserProfile:
-        """Replace the profile for `user_id` with data from a dictionary."""
         self.profiles[user_id] = UserProfile.from_dict(profile_data)
         self.save_profiles()
         return self.profiles[user_id]

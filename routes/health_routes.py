@@ -1,23 +1,16 @@
-"""
-Health routes — symptoms, emergency, wellness, triage, and first aid.
-"""
 from flask import Blueprint, request, jsonify
+from flask import current_app as app
 
 health_bp = Blueprint("health", __name__)
-
-from flask import current_app as app
 
 
 def _services():
     return app.config["SERVICES"]
 
 
-# ── Symptom analysis ──────────────────────────────────────────────────────────
-
 @health_bp.route("/analyze-symptoms", methods=["POST"])
 def analyze_symptoms():
-    """Analyse a message for symptoms and return a risk assessment."""
-    svc  = _services()
+    svc = _services()
     data = request.json
 
     message = data.get("message")
@@ -27,7 +20,7 @@ def analyze_symptoms():
         return jsonify({"error": "No message provided"}), 400
 
     try:
-        profile  = svc["profile_manager"].get_profile(user_id)
+        profile = svc["profile_manager"].get_profile(user_id)
         analysis = svc["symptom_analyzer"].analyze_message(message, profile.to_dict())
         return jsonify(analysis)
     except Exception as e:
@@ -36,9 +29,8 @@ def analyze_symptoms():
 
 @health_bp.route("/emergency-check", methods=["POST"])
 def emergency_check():
-    """Quick check: does the message contain emergency keywords?"""
-    svc     = _services()
-    data    = request.json
+    svc = _services()
+    data = request.json
     message = data.get("message")
 
     if not message:
@@ -54,17 +46,14 @@ def emergency_check():
         return jsonify({"error": str(e)}), 500
 
 
-# ── Emergency services ────────────────────────────────────────────────────────
-
 @health_bp.route("/nearby-hospitals", methods=["GET"])
 def nearby_hospitals():
-    """Return hospitals within 50 km of the given coordinates."""
     svc = _services()
     try:
-        lat         = float(request.args.get("lat"))
-        lon         = float(request.args.get("lon"))
+        lat = float(request.args.get("lat"))
+        lon = float(request.args.get("lon"))
         max_results = int(request.args.get("max_results", 5))
-        hospitals   = svc["emergency_support"].find_nearby_hospitals(lat, lon, max_results)
+        hospitals = svc["emergency_support"].find_nearby_hospitals(lat, lon, max_results)
         return jsonify({"hospitals": hospitals, "count": len(hospitals)})
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid coordinates provided"}), 400
@@ -74,13 +63,12 @@ def nearby_hospitals():
 
 @health_bp.route("/nearby-pharmacies", methods=["GET"])
 def nearby_pharmacies():
-    """Return 24/7 pharmacies within 50 km of the given coordinates."""
     svc = _services()
     try:
-        lat         = float(request.args.get("lat"))
-        lon         = float(request.args.get("lon"))
+        lat = float(request.args.get("lat"))
+        lon = float(request.args.get("lon"))
         max_results = int(request.args.get("max_results", 5))
-        pharmacies  = svc["emergency_support"].find_nearby_pharmacies(lat, lon, max_results)
+        pharmacies = svc["emergency_support"].find_nearby_pharmacies(lat, lon, max_results)
         return jsonify({"pharmacies": pharmacies, "count": len(pharmacies)})
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid coordinates provided"}), 400
@@ -90,7 +78,6 @@ def nearby_pharmacies():
 
 @health_bp.route("/emergency-contacts", methods=["GET"])
 def emergency_contacts():
-    """Return all emergency contact numbers."""
     svc = _services()
     try:
         contacts = svc["emergency_support"].get_emergency_contacts()
@@ -99,18 +86,15 @@ def emergency_contacts():
         return jsonify({"error": str(e)}), 500
 
 
-# ── Wellness ──────────────────────────────────────────────────────────────────
-
 @health_bp.route("/wellness-tips", methods=["GET"])
 def wellness_tips():
-    """Return personalised wellness tips for a user."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
-    count   = int(request.args.get("count", 5))
+    count = int(request.args.get("count", 5))
 
     try:
         profile = svc["profile_manager"].get_profile(user_id)
-        tips    = svc["wellness_guide"].get_personalized_tips(profile.to_dict(), count)
+        tips = svc["wellness_guide"].get_personalized_tips(profile.to_dict(), count)
         return jsonify({"tips": tips, "count": len(tips)})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -118,13 +102,12 @@ def wellness_tips():
 
 @health_bp.route("/daily-tip", methods=["GET"])
 def daily_tip():
-    """Return a single personalised wellness tip for today."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
 
     try:
         profile = svc["profile_manager"].get_profile(user_id)
-        tip     = svc["wellness_guide"].get_daily_wellness_tip(profile.to_dict())
+        tip = svc["wellness_guide"].get_daily_wellness_tip(profile.to_dict())
         return jsonify({"tip": tip})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -132,12 +115,11 @@ def daily_tip():
 
 @health_bp.route("/proactive-alerts", methods=["GET"])
 def proactive_alerts():
-    """Return proactive health alerts, optionally enriched with environmental data."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
 
     try:
-        profile  = svc["profile_manager"].get_profile(user_id)
+        profile = svc["profile_manager"].get_profile(user_id)
         lat, lon = request.args.get("lat"), request.args.get("lon")
 
         env_data = None
@@ -156,9 +138,8 @@ def proactive_alerts():
 
 @health_bp.route("/self-care", methods=["GET"])
 def self_care():
-    """Return self-care recommendations for a symptom category and risk level."""
-    svc        = _services()
-    category   = request.args.get("category")
+    svc = _services()
+    category = request.args.get("category")
     risk_level = request.args.get("risk_level")
 
     try:
@@ -168,22 +149,19 @@ def self_care():
         return jsonify({"error": str(e)}), 500
 
 
-# ── Triage & first aid ────────────────────────────────────────────────────────
-
 @health_bp.route("/triage", methods=["POST"])
 def triage():
-    """Conduct an AI-powered clinical triage based on symptom analysis."""
-    svc  = _services()
+    svc = _services()
     data = request.json
 
-    user_id          = data.get("user_id", "default")
+    user_id = data.get("user_id", "default")
     symptom_analysis = data.get("symptom_analysis")
 
     if not symptom_analysis:
         return jsonify({"error": "No symptom analysis provided"}), 400
 
     try:
-        profile       = svc["profile_manager"].get_profile(user_id)
+        profile = svc["profile_manager"].get_profile(user_id)
         triage_report = svc["triage_engine"].conduct_triage(symptom_analysis, profile.to_dict())
         return jsonify(triage_report)
     except Exception as e:
@@ -192,8 +170,7 @@ def triage():
 
 @health_bp.route("/first-aid", methods=["GET"])
 def get_first_aid():
-    """Return step-by-step first aid instructions for an emergency type."""
-    svc            = _services()
+    svc = _services()
     emergency_type = request.args.get("type", "general")
-    steps          = svc["first_aid"].get_step_by_step(emergency_type)
+    steps = svc["first_aid"].get_step_by_step(emergency_type)
     return jsonify({"emergency_type": emergency_type, "steps": steps})

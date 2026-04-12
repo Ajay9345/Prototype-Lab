@@ -12,12 +12,6 @@ SYSTEM_PROMPT = (
 
 
 class MedicationSafetyChecker:
-    """
-    Checks new medications for drug-drug interactions, allergy conflicts,
-    and contraindications based on the user's health profile.
-    Uses Groq LLM for AI-powered analysis.
-    """
-
     def __init__(self):
         try:
             api_key = os.getenv("GROQ_API_KEY")
@@ -26,17 +20,6 @@ class MedicationSafetyChecker:
             self.groq_client = None
 
     def check_interactions(self, new_meds: List[str], current_profile: Dict) -> Dict:
-        """
-        Analyse new medications against the user's existing profile.
-
-        Args:
-            new_meds:        List of newly mentioned or prescribed medications.
-            current_profile: User's health profile dict.
-
-        Returns:
-            Dict with keys: status ("safe" | "caution" | "danger" | "error"),
-            warnings (list), details (str).
-        """
         if not new_meds:
             return {"status": "safe", "warnings": [], "details": "No new medications to check."}
 
@@ -48,8 +31,8 @@ class MedicationSafetyChecker:
             }
 
         current_meds = current_profile.get("medications", [])
-        allergies    = current_profile.get("allergies", [])
-        conditions   = current_profile.get("conditions", [])
+        allergies = current_profile.get("allergies", [])
+        conditions = current_profile.get("conditions", [])
 
         prompt = (
             f"You are a medical safety assistant. Analyse the following new medications for potential risks:\n\n"
@@ -85,12 +68,10 @@ class MedicationSafetyChecker:
             }
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[MedicationSafetyChecker] = None
 
 
 def get_medication_safety_checker() -> MedicationSafetyChecker:
-    """Return the shared MedicationSafetyChecker instance."""
     global _instance
     if _instance is None:
         _instance = MedicationSafetyChecker()

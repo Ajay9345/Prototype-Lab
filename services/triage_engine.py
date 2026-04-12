@@ -12,12 +12,6 @@ SYSTEM_PROMPT = (
 
 
 class VirtualTriageEngine:
-    """
-    Simulates a primary-care triage assessment.
-    Given a symptom analysis and user profile, it determines urgency level,
-    recommends a specialist, and generates clinical follow-up questions.
-    """
-
     def __init__(self):
         try:
             api_key = os.getenv("GROQ_API_KEY")
@@ -26,17 +20,6 @@ class VirtualTriageEngine:
             self.groq_client = None
 
     def conduct_triage(self, symptom_analysis: Dict, user_profile: Dict) -> Dict:
-        """
-        Perform a clinical triage based on the symptom analysis.
-
-        Args:
-            symptom_analysis: Output from SymptomAnalyzer.analyze_message().
-            user_profile:     User's health profile dict.
-
-        Returns:
-            Dict with follow_up_questions, urgency_level,
-            recommended_specialist, rationale.
-        """
         if not symptom_analysis.get("has_symptoms"):
             return {"status": "no_symptoms", "message": "No specific symptoms to triage."}
 
@@ -47,10 +30,10 @@ class VirtualTriageEngine:
                 "message": "AI Triage engine offline. Follow standard symptom guidance.",
             }
 
-        symptoms   = ", ".join(symptom_analysis.get("symptoms", []))
-        age        = user_profile.get("age", "Unknown")
+        symptoms = ", ".join(symptom_analysis.get("symptoms", []))
+        age = user_profile.get("age", "Unknown")
         conditions = ", ".join(user_profile.get("conditions", [])) or "None"
-        risk       = symptom_analysis.get("risk_level", "low")
+        risk = symptom_analysis.get("risk_level", "low")
 
         prompt = (
             f"You are a senior clinical triage officer. A patient presents with: {symptoms}.\n\n"
@@ -79,12 +62,10 @@ class VirtualTriageEngine:
             return {"status": "error", "message": f"Triage failed: {e}"}
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[VirtualTriageEngine] = None
 
 
 def get_triage_engine() -> VirtualTriageEngine:
-    """Return the shared VirtualTriageEngine instance."""
     global _instance
     if _instance is None:
         _instance = VirtualTriageEngine()

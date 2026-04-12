@@ -1,13 +1,9 @@
-"""
-Medical records routes — prescriptions and lab reports.
-"""
 import os
 from flask import Blueprint, request, jsonify
-
-records_bp = Blueprint("records", __name__)
-
 from flask import current_app as app
 from utils.helpers import is_allowed_file, save_temp_image, remove_file_if_exists
+
+records_bp = Blueprint("records", __name__)
 
 FILE_ERROR_MSG = "Invalid file type. Allowed: PNG, JPG, JPEG, GIF, BMP"
 
@@ -16,16 +12,13 @@ def _services():
     return app.config["SERVICES"]
 
 
-# ── Prescriptions ─────────────────────────────────────────────────────────────
-
 @records_bp.route("/upload-prescription", methods=["POST"])
 def upload_prescription():
-    """Upload a prescription image, run OCR, and run a medication safety check."""
-    svc     = _services()
+    svc = _services()
     user_id = request.form.get("user_id", "default")
 
     file = _get_uploaded_file(request, "prescription")
-    if isinstance(file, tuple):  # error response
+    if isinstance(file, tuple):
         return file
 
     try:
@@ -47,12 +40,11 @@ def upload_prescription():
 
 @records_bp.route("/prescriptions", methods=["GET"])
 def get_prescriptions():
-    """Return all prescriptions for a user."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
 
     try:
-        profile       = svc["profile_manager"].get_profile(user_id)
+        profile = svc["profile_manager"].get_profile(user_id)
         prescriptions = profile.get_prescriptions()
         return jsonify({"prescriptions": prescriptions, "count": len(prescriptions)})
     except Exception as e:
@@ -61,8 +53,7 @@ def get_prescriptions():
 
 @records_bp.route("/prescription/<prescription_id>", methods=["DELETE"])
 def delete_prescription(prescription_id):
-    """Delete a prescription record and its image file."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
 
     try:
@@ -76,12 +67,9 @@ def delete_prescription(prescription_id):
         return jsonify({"error": str(e)}), 500
 
 
-# ── Lab reports ───────────────────────────────────────────────────────────────
-
 @records_bp.route("/upload-lab-report", methods=["POST"])
 def upload_lab_report():
-    """Upload a lab report image, run OCR, analyse values, and save to profile."""
-    svc     = _services()
+    svc = _services()
     user_id = request.form.get("user_id", "default")
 
     file = _get_uploaded_file(request, "lab_report")
@@ -89,7 +77,7 @@ def upload_lab_report():
         return file
 
     try:
-        profile    = svc["profile_manager"].get_profile(user_id)
+        profile = svc["profile_manager"].get_profile(user_id)
         lab_report = svc["lab_test_handler"].process_lab_report(file, user_id, profile.gender)
 
         analysis = svc["lab_test_analyzer"].analyze_lab_report(
@@ -104,20 +92,17 @@ def upload_lab_report():
         profile.add_lab_report(lab_report)
         svc["profile_manager"].save_profiles()
 
-        # Translate analysis if the user's language is not English
         if profile.preferred_language != "en":
-            analysis = svc["language_support"].translate_dict(
-                analysis, "en", profile.preferred_language
-            )
+            analysis = svc["language_support"].translate_dict(analysis, "en", profile.preferred_language)
 
         return jsonify({
             "success": True,
             "lab_report": {
-                "id":           lab_report["id"],
-                "filename":     lab_report["filename"],
-                "upload_date":  lab_report["upload_date"],
-                "test_category":lab_report["test_category"],
-                "analysis":     analysis,
+                "id":            lab_report["id"],
+                "filename":      lab_report["filename"],
+                "upload_date":   lab_report["upload_date"],
+                "test_category": lab_report["test_category"],
+                "analysis":      analysis,
             },
         })
     except Exception as e:
@@ -126,15 +111,13 @@ def upload_lab_report():
 
 @records_bp.route("/lab-reports", methods=["GET"])
 def get_lab_reports():
-    """Return a summary list of all lab reports for a user."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
 
     try:
-        profile     = svc["profile_manager"].get_profile(user_id)
+        profile = svc["profile_manager"].get_profile(user_id)
         lab_reports = profile.get_lab_reports()
 
-        # Return only summary fields to keep the response small
         summaries = [
             {
                 "id":             r["id"],
@@ -152,30 +135,27 @@ def get_lab_reports():
 
 @records_bp.route("/lab-report/<report_id>", methods=["GET"])
 def get_lab_report_details(report_id):
-    """Return the full analysis for a specific lab report."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
 
     try:
         profile = svc["profile_manager"].get_profile(user_id)
-        report  = next((r for r in profile.get_lab_reports() if r["id"] == report_id), None)
+        report = next((r for r in profile.get_lab_reports() if r["id"] == report_id), None)
 
         if not report:
             return jsonify({"error": "Lab report not found"}), 404
 
         analysis = report.get("analysis", {})
         if profile.preferred_language != "en":
-            analysis = svc["language_support"].translate_dict(
-                analysis, "en", profile.preferred_language
-            )
+            analysis = svc["language_support"].translate_dict(analysis, "en", profile.preferred_language)
 
         return jsonify({
             "lab_report": {
-                "id":           report["id"],
-                "filename":     report["filename"],
-                "upload_date":  report["upload_date"],
-                "test_category":report["test_category"],
-                "analysis":     analysis,
+                "id":            report["id"],
+                "filename":      report["filename"],
+                "upload_date":   report["upload_date"],
+                "test_category": report["test_category"],
+                "analysis":      analysis,
             }
         })
     except Exception as e:
@@ -184,8 +164,7 @@ def get_lab_report_details(report_id):
 
 @records_bp.route("/lab-report/<report_id>", methods=["DELETE"])
 def delete_lab_report(report_id):
-    """Delete a lab report record and its image file."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
 
     try:
@@ -201,12 +180,11 @@ def delete_lab_report(report_id):
 
 @records_bp.route("/lab-trends", methods=["GET"])
 def get_lab_trends():
-    """Return trend data for lab parameters across multiple reports."""
-    svc     = _services()
+    svc = _services()
     user_id = request.args.get("user_id", "default")
 
     try:
-        profile     = svc["profile_manager"].get_profile(user_id)
+        profile = svc["profile_manager"].get_profile(user_id)
         lab_reports = profile.get_lab_reports()
 
         if not lab_reports:
@@ -218,13 +196,7 @@ def get_lab_trends():
         return jsonify({"error": str(e)}), 500
 
 
-# ── Shared helper ─────────────────────────────────────────────────────────────
-
 def _get_uploaded_file(req, field_name: str):
-    """
-    Validate and return the uploaded file from the request.
-    Returns the file object on success, or a (jsonify, status_code) tuple on error.
-    """
     if field_name not in req.files:
         return jsonify({"error": "No file provided"}), 400
 

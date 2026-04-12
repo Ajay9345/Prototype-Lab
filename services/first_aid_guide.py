@@ -1,7 +1,5 @@
 from typing import Dict, List, Optional
 
-
-# ── Step-by-step first aid guides ─────────────────────────────────────────────
 GUIDES: Dict[str, List[Dict]] = {
     "cpr": [
         {"step": 1, "text": "Check the scene for safety and the person for responsiveness.",          "visual": "scene_safety_icon"},
@@ -24,30 +22,11 @@ GUIDES: Dict[str, List[Dict]] = {
     ],
 }
 
-FALLBACK_STEP = [{
-    "step":   0,
-    "text":   "No specific guide found. Follow general first aid protocols and call 108.",
-    "visual": "general_warning",
-}]
+FALLBACK_STEP = [{"step": 0, "text": "No specific guide found. Follow general first aid protocols and call 108.", "visual": "general_warning"}]
 
 
 class ARFirstAidGuide:
-    """
-    Provides step-by-step first aid instructions for common emergencies
-    (CPR, Heimlich manoeuvre, bleeding control).
-    """
-
     def get_step_by_step(self, emergency_type: str) -> List[Dict]:
-        """
-        Return the first aid steps for the given emergency type.
-
-        Args:
-            emergency_type: A string like "cpr", "heimlich", or "bleeding".
-                            Partial matches are accepted (e.g. "cpr emergency").
-
-        Returns:
-            List of step dicts, each with 'step', 'text', and 'visual' keys.
-        """
         etype = emergency_type.lower()
         for key, steps in GUIDES.items():
             if key in etype:
@@ -55,12 +34,10 @@ class ARFirstAidGuide:
         return FALLBACK_STEP
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[ARFirstAidGuide] = None
 
 
 def get_first_aid_guide() -> ARFirstAidGuide:
-    """Return the shared ARFirstAidGuide instance."""
     global _instance
     if _instance is None:
         _instance = ARFirstAidGuide()

@@ -3,47 +3,42 @@ import os
 from typing import Dict, List, Optional, Tuple
 from groq import Groq
 
-
-# ── Reference data ─────────────────────────────────────────────────────────────
-
-# Human-readable display names for each test parameter
 PARAM_DISPLAY_NAMES: Dict[str, str] = {
-    "hemoglobin":        "Hemoglobin (Hb)",
-    "rbc":               "Red Blood Cells (RBC)",
-    "wbc":               "White Blood Cells (WBC)",
-    "platelets":         "Platelets",
-    "hematocrit":        "Hematocrit (HCT)",
-    "mcv":               "Mean Corpuscular Volume (MCV)",
-    "mch":               "Mean Corpuscular Hemoglobin (MCH)",
-    "mchc":              "Mean Corpuscular Hemoglobin Concentration (MCHC)",
-    "total_cholesterol": "Total Cholesterol",
-    "ldl":               "LDL Cholesterol (Bad Cholesterol)",
-    "hdl":               "HDL Cholesterol (Good Cholesterol)",
-    "triglycerides":     "Triglycerides",
-    "vldl":              "VLDL Cholesterol",
-    "fasting":           "Fasting Blood Sugar",
-    "pp":                "Post-Prandial Blood Sugar",
-    "random":            "Random Blood Sugar",
-    "hba1c":             "HbA1c (Glycated Hemoglobin)",
-    "tsh":               "Thyroid Stimulating Hormone (TSH)",
-    "t3":                "Triiodothyronine (T3)",
-    "t4":                "Thyroxine (T4)",
-    "free_t3":           "Free T3",
-    "free_t4":           "Free T4",
-    "sgot":              "SGOT/AST",
-    "sgpt":              "SGPT/ALT",
-    "alp":               "Alkaline Phosphatase (ALP)",
-    "bilirubin_total":   "Total Bilirubin",
-    "bilirubin_direct":  "Direct Bilirubin",
-    "bilirubin_indirect":"Indirect Bilirubin",
-    "creatinine":        "Creatinine",
-    "bun":               "Blood Urea Nitrogen (BUN)",
-    "uric_acid":         "Uric Acid",
-    "vitamin_d":         "Vitamin D",
-    "vitamin_b12":       "Vitamin B12",
+    "hemoglobin":         "Hemoglobin (Hb)",
+    "rbc":                "Red Blood Cells (RBC)",
+    "wbc":                "White Blood Cells (WBC)",
+    "platelets":          "Platelets",
+    "hematocrit":         "Hematocrit (HCT)",
+    "mcv":                "Mean Corpuscular Volume (MCV)",
+    "mch":                "Mean Corpuscular Hemoglobin (MCH)",
+    "mchc":               "Mean Corpuscular Hemoglobin Concentration (MCHC)",
+    "total_cholesterol":  "Total Cholesterol",
+    "ldl":                "LDL Cholesterol (Bad Cholesterol)",
+    "hdl":                "HDL Cholesterol (Good Cholesterol)",
+    "triglycerides":      "Triglycerides",
+    "vldl":               "VLDL Cholesterol",
+    "fasting":            "Fasting Blood Sugar",
+    "pp":                 "Post-Prandial Blood Sugar",
+    "random":             "Random Blood Sugar",
+    "hba1c":              "HbA1c (Glycated Hemoglobin)",
+    "tsh":                "Thyroid Stimulating Hormone (TSH)",
+    "t3":                 "Triiodothyronine (T3)",
+    "t4":                 "Thyroxine (T4)",
+    "free_t3":            "Free T3",
+    "free_t4":            "Free T4",
+    "sgot":               "SGOT/AST",
+    "sgpt":               "SGPT/ALT",
+    "alp":                "Alkaline Phosphatase (ALP)",
+    "bilirubin_total":    "Total Bilirubin",
+    "bilirubin_direct":   "Direct Bilirubin",
+    "bilirubin_indirect": "Indirect Bilirubin",
+    "creatinine":         "Creatinine",
+    "bun":                "Blood Urea Nitrogen (BUN)",
+    "uric_acid":          "Uric Acid",
+    "vitamin_d":          "Vitamin D",
+    "vitamin_b12":        "Vitamin B12",
 }
 
-# What a LOW value means for each parameter
 LOW_INTERPRETATIONS: Dict[str, str] = {
     "hemoglobin":  "possible anaemia or blood loss",
     "rbc":         "possible anaemia",
@@ -55,7 +50,6 @@ LOW_INTERPRETATIONS: Dict[str, str] = {
     "vitamin_b12": "vitamin B12 deficiency",
 }
 
-# What a HIGH value means for each parameter
 HIGH_INTERPRETATIONS: Dict[str, str] = {
     "wbc":               "possible infection or inflammation",
     "platelets":         "increased clotting risk",
@@ -71,7 +65,6 @@ HIGH_INTERPRETATIONS: Dict[str, str] = {
     "uric_acid":         "risk of gout",
 }
 
-# Lifestyle recommendations per parameter (shown when value is abnormal)
 PARAM_RECOMMENDATIONS: Dict[str, List[str]] = {
     "hemoglobin":        ["Increase iron-rich foods (spinach, lentils, dates, pomegranate)", "Include vitamin C for better iron absorption", "Consider iron supplements after doctor consultation"],
     "total_cholesterol": ["Reduce saturated fats and trans fats", "Increase fibre intake (oats, beans, fruits)", "Exercise regularly (30 minutes daily)", "Maintain healthy weight"],
@@ -92,17 +85,10 @@ DEFAULT_RECOMMENDATIONS = [
     "Adequate sleep and stress management",
 ]
 
-# Groq model used for generating the AI summary
 AI_SUMMARY_MODEL = "llama-3.1-8b-instant"
 
 
 class LabTestAnalyzer:
-    """
-    Analyses parsed lab test values against reference ranges,
-    determines status (normal / high / low / critical),
-    and generates an AI-powered plain-language summary.
-    """
-
     def __init__(self):
         self.normal_ranges = self._load_normal_ranges()
         try:
@@ -111,24 +97,7 @@ class LabTestAnalyzer:
         except Exception:
             self.groq_client = None
 
-    # ── Public API ────────────────────────────────────────────────────────────
-
-    def analyze_lab_report(
-        self,
-        test_values: Dict,
-        test_category: str,
-        gender: str = "male",
-        age: Optional[int] = None,
-        user_profile: Optional[Dict] = None,
-    ) -> Dict:
-        """
-        Analyse all parameters in a lab report and return a structured result.
-
-        Returns:
-            Dict with test_category, overall_status, parameters list,
-            AI summary, lifestyle_recommendations, when_to_consult_doctor,
-            abnormal_count, total_parameters.
-        """
+    def analyze_lab_report(self, test_values: Dict, test_category: str, gender: str = "male", age: Optional[int] = None, user_profile: Optional[Dict] = None) -> Dict:
         if not test_values:
             return {
                 "test_category":  test_category,
@@ -138,9 +107,9 @@ class LabTestAnalyzer:
                 "recommendations": [],
             }
 
-        analyzed   = []
-        abnormal   = 0
-        critical   = 0
+        analyzed = []
+        abnormal = 0
+        critical = 0
 
         for name, data in test_values.items():
             result = self._analyze_single_param(name, data, gender, age)
@@ -151,7 +120,6 @@ class LabTestAnalyzer:
                 if result.get("is_critical"):
                     critical += 1
 
-        # Determine overall status message
         if critical > 0:
             overall = "Critical — Immediate medical attention needed"
         elif abnormal > len(analyzed) / 2:
@@ -164,23 +132,17 @@ class LabTestAnalyzer:
         ai_summary = self._generate_ai_summary(analyzed, test_category, user_profile)
 
         return {
-            "test_category":          test_category,
-            "overall_status":         overall,
-            "parameters":             analyzed,
-            "summary":                ai_summary.get("summary", ""),
+            "test_category":             test_category,
+            "overall_status":            overall,
+            "parameters":                analyzed,
+            "summary":                   ai_summary.get("summary", ""),
             "lifestyle_recommendations": ai_summary.get("lifestyle_recommendations", []),
-            "when_to_consult_doctor": ai_summary.get("when_to_consult_doctor", []),
-            "abnormal_count":         abnormal,
-            "total_parameters":       len(analyzed),
+            "when_to_consult_doctor":    ai_summary.get("when_to_consult_doctor", []),
+            "abnormal_count":            abnormal,
+            "total_parameters":          len(analyzed),
         }
 
     def get_parameter_trends(self, lab_reports: List[Dict]) -> Dict:
-        """
-        Build a trend history for each parameter across multiple lab reports.
-
-        Returns:
-            Dict mapping parameter name → {unit, history, summary}.
-        """
         if not lab_reports:
             return {}
 
@@ -188,7 +150,7 @@ class LabTestAnalyzer:
         trends: Dict[str, Dict] = {}
 
         for report in sorted_reports:
-            date       = report.get("upload_date", "").split("T")[0]
+            date = report.get("upload_date", "").split("T")[0]
             parameters = report.get("analysis", {}).get("parameters", [])
 
             for param in parameters:
@@ -203,7 +165,6 @@ class LabTestAnalyzer:
                     "status": param.get("status", "unknown"),
                 })
 
-        # Add a plain-language trend summary to each parameter
         for name, data in trends.items():
             data["summary"] = (
                 self._trend_summary(name, data["history"])
@@ -213,8 +174,6 @@ class LabTestAnalyzer:
 
         return trends
 
-    # ── Private helpers ───────────────────────────────────────────────────────
-
     def _load_normal_ranges(self) -> Dict:
         try:
             with open(os.path.join("data", "lab_test_ranges.json"), "r") as f:
@@ -223,14 +182,7 @@ class LabTestAnalyzer:
             print(f"Error loading normal ranges: {e}")
             return {}
 
-    def _analyze_single_param(
-        self,
-        param_name: str,
-        param_data: Dict,
-        gender: str,
-        age: Optional[int],
-    ) -> Optional[Dict]:
-        """Analyse one parameter and return its result dict, or None if no value."""
+    def _analyze_single_param(self, param_name: str, param_data: Dict, gender: str, age: Optional[int]) -> Optional[Dict]:
         value = param_data.get("value")
         if value is None:
             return None
@@ -239,53 +191,41 @@ class LabTestAnalyzer:
 
         if not param_range:
             return {
-                "name":           PARAM_DISPLAY_NAMES.get(param_name, param_name.replace("_", " ").title()),
-                "value":          value,
-                "unit":           param_data.get("unit", ""),
-                "normal_range":   "Not available",
-                "status":         "unknown",
-                "interpretation": "Normal range not available for this parameter.",
+                "name":            PARAM_DISPLAY_NAMES.get(param_name, param_name.replace("_", " ").title()),
+                "value":           value,
+                "unit":            param_data.get("unit", ""),
+                "normal_range":    "Not available",
+                "status":          "unknown",
+                "interpretation":  "Normal range not available for this parameter.",
                 "recommendations": [],
             }
 
         status, interpretation, is_critical = self._determine_status(param_name, value, param_range)
 
         return {
-            "name":           PARAM_DISPLAY_NAMES.get(param_name, param_name.replace("_", " ").title()),
-            "value":          value,
-            "unit":           param_data.get("unit", param_range.get("unit", "")),
-            "normal_range":   self._format_range(param_range),
-            "status":         status,
-            "interpretation": interpretation,
+            "name":            PARAM_DISPLAY_NAMES.get(param_name, param_name.replace("_", " ").title()),
+            "value":           value,
+            "unit":            param_data.get("unit", param_range.get("unit", "")),
+            "normal_range":    self._format_range(param_range),
+            "status":          status,
+            "interpretation":  interpretation,
             "recommendations": PARAM_RECOMMENDATIONS.get(param_name, DEFAULT_RECOMMENDATIONS) if status != "normal" else [],
-            "is_critical":    is_critical,
+            "is_critical":     is_critical,
         }
 
     def _find_range(self, param_name: str, gender: str) -> Optional[Dict]:
-        """Look up the reference range for a parameter, handling gender-specific ranges."""
         for _category, tests in self.normal_ranges.items():
             if param_name in tests:
                 rng = tests[param_name]
-                # If the range has gender sub-keys, return the appropriate one
                 if isinstance(rng, dict) and gender in rng:
                     return rng[gender]
                 return rng
         return None
 
-    def _determine_status(
-        self,
-        param_name: str,
-        value: float,
-        param_range: Dict,
-    ) -> Tuple[str, str, bool]:
-        """
-        Compare value against min/max and return (status, interpretation, is_critical).
-        is_critical is True when the value is extremely far from the normal range.
-        """
+    def _determine_status(self, param_name: str, value: float, param_range: Dict) -> Tuple[str, str, bool]:
         min_val = param_range.get("min")
         max_val = param_range.get("max")
 
-        # Critical thresholds: <50% of min or >200% of max
         is_critical = (
             (min_val is not None and value < min_val * 0.5)
             or (max_val is not None and value > max_val * 2)
@@ -303,10 +243,9 @@ class LabTestAnalyzer:
 
     @staticmethod
     def _format_range(param_range: Dict) -> str:
-        """Format a reference range dict as a readable string."""
         min_val = param_range.get("min")
         max_val = param_range.get("max")
-        unit    = param_range.get("unit", "")
+        unit = param_range.get("unit", "")
 
         if min_val is not None and max_val is not None:
             return f"{min_val}–{max_val} {unit}".strip()
@@ -316,20 +255,11 @@ class LabTestAnalyzer:
             return f"> {min_val} {unit}".strip()
         return "Range not available"
 
-    def _generate_ai_summary(
-        self,
-        analyzed: List[Dict],
-        test_category: str,
-        user_profile: Optional[Dict],
-    ) -> Dict:
-        """
-        Use Groq to generate a plain-language summary and recommendations
-        for any abnormal parameters.  Falls back to static text if unavailable.
-        """
+    def _generate_ai_summary(self, analyzed: List[Dict], test_category: str, user_profile: Optional[Dict]) -> Dict:
         fallback = {
-            "summary":                  "Analysis complete. Please review individual parameters.",
+            "summary":                   "Analysis complete. Please review individual parameters.",
             "lifestyle_recommendations": [],
-            "when_to_consult_doctor":   [],
+            "when_to_consult_doctor":    [],
         }
 
         if not self.groq_client or not analyzed:
@@ -343,7 +273,6 @@ class LabTestAnalyzer:
                 "when_to_consult_doctor": [],
             }
 
-        # Build the prompt
         param_lines = "\n".join(
             f"- {p['name']}: {p['value']} {p['unit']} (Normal: {p['normal_range']}) — {p['status'].upper()}"
             for p in abnormal
@@ -369,21 +298,17 @@ class LabTestAnalyzer:
         except Exception as e:
             print(f"AI summary error: {e}")
             return {
-                "summary":                  "Some values are outside the normal range. Please review the details above.",
+                "summary":                   "Some values are outside the normal range. Please review the details above.",
                 "lifestyle_recommendations": [],
-                "when_to_consult_doctor":   ["Consult your doctor to discuss these abnormal results"],
+                "when_to_consult_doctor":    ["Consult your doctor to discuss these abnormal results"],
             }
 
     @staticmethod
     def _parse_ai_response(text: str) -> Dict:
-        """
-        Parse the free-text AI response into structured sections.
-        Sections are detected by keywords in the line.
-        """
-        summary       = []
+        summary = []
         recommendations = []
         doctor_advice = []
-        section       = "summary"
+        section = "summary"
 
         for raw_line in text.split("\n"):
             line = raw_line.strip()
@@ -405,30 +330,29 @@ class LabTestAnalyzer:
                 doctor_advice.append(line.lstrip("-•0123456789. "))
 
         return {
-            "summary":                  " ".join(summary) or "Please review the abnormal parameters above.",
+            "summary":                   " ".join(summary) or "Please review the abnormal parameters above.",
             "lifestyle_recommendations": recommendations[:5],
-            "when_to_consult_doctor":   doctor_advice or ["Consult your doctor to discuss these results"],
+            "when_to_consult_doctor":    doctor_advice or ["Consult your doctor to discuss these results"],
         }
 
     @staticmethod
     def _trend_summary(param_name: str, history: List[Dict]) -> str:
-        """Generate a one-sentence trend description for a parameter."""
         first = history[0]["value"]
-        last  = history[-1]["value"]
+        last = history[-1]["value"]
 
         if not isinstance(first, (int, float)) or not isinstance(last, (int, float)):
             return f"Trend available across {len(history)} records."
 
-        diff    = last - first
-        pct     = (diff / first * 100) if first != 0 else 0
+        diff = last - first
+        pct = (diff / first * 100) if first != 0 else 0
 
         if abs(pct) < 2:
             return f"Stable: {param_name} is consistent at around {last}."
 
         direction = "increasing" if diff > 0 else "decreasing"
         magnitude = "significantly" if abs(pct) > 10 else "slightly"
-        s_first   = history[0]["status"]
-        s_last    = history[-1]["status"]
+        s_first = history[0]["status"]
+        s_last = history[-1]["status"]
 
         if s_last == "normal" and s_first != "normal":
             return f"Improving: {param_name} has moved into the normal range."
@@ -438,12 +362,10 @@ class LabTestAnalyzer:
         return f"{magnitude.capitalize()} {direction}: {param_name} changed by {abs(pct):.1f}% since the first record."
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[LabTestAnalyzer] = None
 
 
 def get_lab_test_analyzer() -> LabTestAnalyzer:
-    """Return the shared LabTestAnalyzer instance."""
     global _instance
     if _instance is None:
         _instance = LabTestAnalyzer()

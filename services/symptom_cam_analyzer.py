@@ -8,11 +8,6 @@ VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 
 
 class SymptomCamAnalyzer:
-    """
-    Analyses a photo of a symptomatic area (skin rash, eye redness, swelling, etc.)
-    using a multimodal vision LLM and returns a structured assessment.
-    """
-
     def __init__(self):
         try:
             api_key = os.getenv("GROQ_API_KEY")
@@ -20,21 +15,7 @@ class SymptomCamAnalyzer:
         except Exception:
             self.groq_client = None
 
-    def analyze_symptom_image(
-        self,
-        image_path: str,
-        symptoms_history: str = "",
-    ) -> Dict:
-        """
-        Analyse a symptom image and return a visual health assessment.
-
-        Args:
-            image_path:       Path to the saved image file.
-            symptoms_history: Optional text context about the user's symptoms.
-
-        Returns:
-            Dict with status, analysis, possible_indications, urgency, recommendation.
-        """
+    def analyze_symptom_image(self, image_path: str, symptoms_history: str = "") -> Dict:
         if not os.path.exists(image_path):
             return {"status": "error", "message": "Image file not found."}
 
@@ -83,12 +64,10 @@ class SymptomCamAnalyzer:
             }
 
 
-# ── Singleton accessor ────────────────────────────────────────────────────────
 _instance: Optional[SymptomCamAnalyzer] = None
 
 
 def get_symptom_cam_analyzer() -> SymptomCamAnalyzer:
-    """Return the shared SymptomCamAnalyzer instance."""
     global _instance
     if _instance is None:
         _instance = SymptomCamAnalyzer()
