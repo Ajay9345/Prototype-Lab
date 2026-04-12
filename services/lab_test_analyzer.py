@@ -3,69 +3,39 @@ import os
 from typing import Dict, List, Optional, Tuple
 from groq import Groq
 
-PARAM_DISPLAY_NAMES: Dict[str, str] = {
-    "hemoglobin":         "Hemoglobin (Hb)",
-    "rbc":                "Red Blood Cells (RBC)",
-    "wbc":                "White Blood Cells (WBC)",
-    "platelets":          "Platelets",
-    "hematocrit":         "Hematocrit (HCT)",
-    "mcv":                "Mean Corpuscular Volume (MCV)",
-    "mch":                "Mean Corpuscular Hemoglobin (MCH)",
-    "mchc":               "Mean Corpuscular Hemoglobin Concentration (MCHC)",
-    "total_cholesterol":  "Total Cholesterol",
-    "ldl":                "LDL Cholesterol (Bad Cholesterol)",
-    "hdl":                "HDL Cholesterol (Good Cholesterol)",
-    "triglycerides":      "Triglycerides",
-    "vldl":               "VLDL Cholesterol",
-    "fasting":            "Fasting Blood Sugar",
-    "pp":                 "Post-Prandial Blood Sugar",
-    "random":             "Random Blood Sugar",
-    "hba1c":              "HbA1c (Glycated Hemoglobin)",
-    "tsh":                "Thyroid Stimulating Hormone (TSH)",
-    "t3":                 "Triiodothyronine (T3)",
-    "t4":                 "Thyroxine (T4)",
-    "free_t3":            "Free T3",
-    "free_t4":            "Free T4",
-    "sgot":               "SGOT/AST",
-    "sgpt":               "SGPT/ALT",
-    "alp":                "Alkaline Phosphatase (ALP)",
-    "bilirubin_total":    "Total Bilirubin",
-    "bilirubin_direct":   "Direct Bilirubin",
-    "bilirubin_indirect": "Indirect Bilirubin",
-    "creatinine":         "Creatinine",
-    "bun":                "Blood Urea Nitrogen (BUN)",
-    "uric_acid":          "Uric Acid",
-    "vitamin_d":          "Vitamin D",
-    "vitamin_b12":        "Vitamin B12",
+PARAM_DISPLAY_NAMES = {
+    "hemoglobin": "Hemoglobin (Hb)", "rbc": "Red Blood Cells (RBC)", "wbc": "White Blood Cells (WBC)",
+    "platelets": "Platelets", "hematocrit": "Hematocrit (HCT)", "mcv": "Mean Corpuscular Volume (MCV)",
+    "mch": "Mean Corpuscular Hemoglobin (MCH)", "mchc": "Mean Corpuscular Hemoglobin Concentration (MCHC)",
+    "total_cholesterol": "Total Cholesterol", "ldl": "LDL Cholesterol (Bad Cholesterol)",
+    "hdl": "HDL Cholesterol (Good Cholesterol)", "triglycerides": "Triglycerides", "vldl": "VLDL Cholesterol",
+    "fasting": "Fasting Blood Sugar", "pp": "Post-Prandial Blood Sugar", "random": "Random Blood Sugar",
+    "hba1c": "HbA1c (Glycated Hemoglobin)", "tsh": "Thyroid Stimulating Hormone (TSH)",
+    "t3": "Triiodothyronine (T3)", "t4": "Thyroxine (T4)", "free_t3": "Free T3", "free_t4": "Free T4",
+    "sgot": "SGOT/AST", "sgpt": "SGPT/ALT", "alp": "Alkaline Phosphatase (ALP)",
+    "bilirubin_total": "Total Bilirubin", "bilirubin_direct": "Direct Bilirubin",
+    "bilirubin_indirect": "Indirect Bilirubin", "creatinine": "Creatinine",
+    "bun": "Blood Urea Nitrogen (BUN)", "uric_acid": "Uric Acid",
+    "vitamin_d": "Vitamin D", "vitamin_b12": "Vitamin B12",
 }
 
-LOW_INTERPRETATIONS: Dict[str, str] = {
-    "hemoglobin":  "possible anaemia or blood loss",
-    "rbc":         "possible anaemia",
-    "wbc":         "weakened immune system or bone marrow issues",
-    "platelets":   "increased bleeding risk",
-    "hdl":         "increased cardiovascular risk",
-    "tsh":         "possible hyperthyroidism",
-    "vitamin_d":   "vitamin D deficiency",
-    "vitamin_b12": "vitamin B12 deficiency",
+LOW_INTERPRETATIONS = {
+    "hemoglobin": "possible anaemia or blood loss", "rbc": "possible anaemia",
+    "wbc": "weakened immune system or bone marrow issues", "platelets": "increased bleeding risk",
+    "hdl": "increased cardiovascular risk", "tsh": "possible hyperthyroidism",
+    "vitamin_d": "vitamin D deficiency", "vitamin_b12": "vitamin B12 deficiency",
 }
 
-HIGH_INTERPRETATIONS: Dict[str, str] = {
-    "wbc":               "possible infection or inflammation",
-    "platelets":         "increased clotting risk",
-    "total_cholesterol": "increased cardiovascular risk",
-    "ldl":               "increased risk of heart disease",
-    "triglycerides":     "increased cardiovascular risk",
-    "fasting":           "possible diabetes or prediabetes",
-    "hba1c":             "poor blood sugar control",
-    "tsh":               "possible hypothyroidism",
-    "sgot":              "possible liver damage",
-    "sgpt":              "possible liver damage",
-    "creatinine":        "possible kidney dysfunction",
-    "uric_acid":         "risk of gout",
+HIGH_INTERPRETATIONS = {
+    "wbc": "possible infection or inflammation", "platelets": "increased clotting risk",
+    "total_cholesterol": "increased cardiovascular risk", "ldl": "increased risk of heart disease",
+    "triglycerides": "increased cardiovascular risk", "fasting": "possible diabetes or prediabetes",
+    "hba1c": "poor blood sugar control", "tsh": "possible hypothyroidism",
+    "sgot": "possible liver damage", "sgpt": "possible liver damage",
+    "creatinine": "possible kidney dysfunction", "uric_acid": "risk of gout",
 }
 
-PARAM_RECOMMENDATIONS: Dict[str, List[str]] = {
+PARAM_RECOMMENDATIONS = {
     "hemoglobin":        ["Increase iron-rich foods (spinach, lentils, dates, pomegranate)", "Include vitamin C for better iron absorption", "Consider iron supplements after doctor consultation"],
     "total_cholesterol": ["Reduce saturated fats and trans fats", "Increase fibre intake (oats, beans, fruits)", "Exercise regularly (30 minutes daily)", "Maintain healthy weight"],
     "ldl":               ["Limit red meat and full-fat dairy", "Eat more nuts, fish, and olive oil", "Increase soluble fibre intake", "Regular physical activity"],
@@ -79,10 +49,8 @@ PARAM_RECOMMENDATIONS: Dict[str, List[str]] = {
 }
 
 DEFAULT_RECOMMENDATIONS = [
-    "Consult your doctor for personalised advice",
-    "Follow a balanced, healthy diet",
-    "Regular physical activity",
-    "Adequate sleep and stress management",
+    "Consult your doctor for personalised advice", "Follow a balanced, healthy diet",
+    "Regular physical activity", "Adequate sleep and stress management",
 ]
 
 AI_SUMMARY_MODEL = "llama-3.1-8b-instant"
@@ -99,38 +67,22 @@ class LabTestAnalyzer:
 
     def analyze_lab_report(self, test_values: Dict, test_category: str, gender: str = "male", age: Optional[int] = None, user_profile: Optional[Dict] = None) -> Dict:
         if not test_values:
-            return {
-                "test_category":  test_category,
-                "overall_status": "No values to analyse",
-                "parameters":     [],
-                "summary":        "Unable to extract test values from the report.",
-                "recommendations": [],
-            }
+            return {"test_category": test_category, "overall_status": "No values to analyse", "parameters": [], "summary": "Unable to extract test values from the report.", "recommendations": []}
 
-        analyzed = []
-        abnormal = 0
-        critical = 0
+        analyzed = [r for name, data in test_values.items() if (r := self._analyze_single_param(name, data, gender, age))]
+        abnormal = sum(1 for p in analyzed if p["status"] in ("high", "low"))
+        critical = sum(1 for p in analyzed if p.get("is_critical"))
 
-        for name, data in test_values.items():
-            result = self._analyze_single_param(name, data, gender, age)
-            if result:
-                analyzed.append(result)
-                if result["status"] in ("high", "low"):
-                    abnormal += 1
-                if result.get("is_critical"):
-                    critical += 1
-
-        if critical > 0:
+        if critical:
             overall = "Critical — Immediate medical attention needed"
         elif abnormal > len(analyzed) / 2:
             overall = "Multiple abnormalities detected"
-        elif abnormal > 0:
+        elif abnormal:
             overall = "Some values need attention"
         else:
             overall = "All values within normal range"
 
         ai_summary = self._generate_ai_summary(analyzed, test_category, user_profile)
-
         return {
             "test_category":             test_category,
             "overall_status":            overall,
@@ -146,37 +98,25 @@ class LabTestAnalyzer:
         if not lab_reports:
             return {}
 
-        sorted_reports = sorted(lab_reports, key=lambda r: r.get("upload_date", ""))
-        trends: Dict[str, Dict] = {}
-
-        for report in sorted_reports:
+        trends: Dict = {}
+        for report in sorted(lab_reports, key=lambda r: r.get("upload_date", "")):
             date = report.get("upload_date", "").split("T")[0]
-            parameters = report.get("analysis", {}).get("parameters", [])
-
-            for param in parameters:
+            for param in report.get("analysis", {}).get("parameters", []):
                 name = param.get("name")
                 if not name:
                     continue
                 if name not in trends:
                     trends[name] = {"unit": param.get("unit", ""), "history": []}
-                trends[name]["history"].append({
-                    "date":   date,
-                    "value":  param.get("value"),
-                    "status": param.get("status", "unknown"),
-                })
+                trends[name]["history"].append({"date": date, "value": param.get("value"), "status": param.get("status", "unknown")})
 
         for name, data in trends.items():
-            data["summary"] = (
-                self._trend_summary(name, data["history"])
-                if len(data["history"]) > 1
-                else "More data points needed to establish a trend."
-            )
+            data["summary"] = self._trend_summary(name, data["history"]) if len(data["history"]) > 1 else "More data points needed to establish a trend."
 
         return trends
 
     def _load_normal_ranges(self) -> Dict:
         try:
-            with open(os.path.join("data", "lab_test_ranges.json"), "r") as f:
+            with open(os.path.join("data", "lab_test_ranges.json")) as f:
                 return json.load(f)
         except Exception as e:
             print(f"Error loading normal ranges: {e}")
@@ -188,22 +128,14 @@ class LabTestAnalyzer:
             return None
 
         param_range = self._find_range(param_name, gender)
+        display_name = PARAM_DISPLAY_NAMES.get(param_name, param_name.replace("_", " ").title())
 
         if not param_range:
-            return {
-                "name":            PARAM_DISPLAY_NAMES.get(param_name, param_name.replace("_", " ").title()),
-                "value":           value,
-                "unit":            param_data.get("unit", ""),
-                "normal_range":    "Not available",
-                "status":          "unknown",
-                "interpretation":  "Normal range not available for this parameter.",
-                "recommendations": [],
-            }
+            return {"name": display_name, "value": value, "unit": param_data.get("unit", ""), "normal_range": "Not available", "status": "unknown", "interpretation": "Normal range not available for this parameter.", "recommendations": []}
 
         status, interpretation, is_critical = self._determine_status(param_name, value, param_range)
-
         return {
-            "name":            PARAM_DISPLAY_NAMES.get(param_name, param_name.replace("_", " ").title()),
+            "name":            display_name,
             "value":           value,
             "unit":            param_data.get("unit", param_range.get("unit", "")),
             "normal_range":    self._format_range(param_range),
@@ -214,39 +146,25 @@ class LabTestAnalyzer:
         }
 
     def _find_range(self, param_name: str, gender: str) -> Optional[Dict]:
-        for _category, tests in self.normal_ranges.items():
+        for _cat, tests in self.normal_ranges.items():
             if param_name in tests:
                 rng = tests[param_name]
-                if isinstance(rng, dict) and gender in rng:
-                    return rng[gender]
-                return rng
+                return rng[gender] if isinstance(rng, dict) and gender in rng else rng
         return None
 
     def _determine_status(self, param_name: str, value: float, param_range: Dict) -> Tuple[str, str, bool]:
-        min_val = param_range.get("min")
-        max_val = param_range.get("max")
-
-        is_critical = (
-            (min_val is not None and value < min_val * 0.5)
-            or (max_val is not None and value > max_val * 2)
-        )
+        min_val, max_val = param_range.get("min"), param_range.get("max")
+        is_critical = (min_val is not None and value < min_val * 0.5) or (max_val is not None and value > max_val * 2)
 
         if min_val is not None and value < min_val:
-            interp = f"Below normal range. This indicates {LOW_INTERPRETATIONS.get(param_name, 'values below normal range')}."
-            return ("low", interp, is_critical)
-
+            return ("low",  f"Below normal range. This indicates {LOW_INTERPRETATIONS.get(param_name, 'values below normal range')}.", is_critical)
         if max_val is not None and value > max_val:
-            interp = f"Above normal range. This indicates {HIGH_INTERPRETATIONS.get(param_name, 'values above normal range')}."
-            return ("high", interp, is_critical)
-
+            return ("high", f"Above normal range. This indicates {HIGH_INTERPRETATIONS.get(param_name, 'values above normal range')}.", is_critical)
         return ("normal", "Within normal range.", False)
 
     @staticmethod
     def _format_range(param_range: Dict) -> str:
-        min_val = param_range.get("min")
-        max_val = param_range.get("max")
-        unit = param_range.get("unit", "")
-
+        min_val, max_val, unit = param_range.get("min"), param_range.get("max"), param_range.get("unit", "")
         if min_val is not None and max_val is not None:
             return f"{min_val}–{max_val} {unit}".strip()
         if max_val is not None:
@@ -256,32 +174,19 @@ class LabTestAnalyzer:
         return "Range not available"
 
     def _generate_ai_summary(self, analyzed: List[Dict], test_category: str, user_profile: Optional[Dict]) -> Dict:
-        fallback = {
-            "summary":                   "Analysis complete. Please review individual parameters.",
-            "lifestyle_recommendations": [],
-            "when_to_consult_doctor":    [],
-        }
+        fallback = {"summary": "Analysis complete. Please review individual parameters.", "lifestyle_recommendations": [], "when_to_consult_doctor": []}
 
         if not self.groq_client or not analyzed:
             return fallback
 
         abnormal = [p for p in analyzed if p["status"] != "normal"]
         if not abnormal:
-            return {
-                "summary": "All your test values are within normal range. Keep up the healthy lifestyle!",
-                "lifestyle_recommendations": ["Continue balanced diet", "Regular exercise", "Adequate sleep", "Stress management"],
-                "when_to_consult_doctor": [],
-            }
+            return {"summary": "All your test values are within normal range. Keep up the healthy lifestyle!", "lifestyle_recommendations": ["Continue balanced diet", "Regular exercise", "Adequate sleep", "Stress management"], "when_to_consult_doctor": []}
 
-        param_lines = "\n".join(
-            f"- {p['name']}: {p['value']} {p['unit']} (Normal: {p['normal_range']}) — {p['status'].upper()}"
-            for p in abnormal
-        )
+        param_lines = "\n".join(f"- {p['name']}: {p['value']} {p['unit']} (Normal: {p['normal_range']}) — {p['status'].upper()}" for p in abnormal)
         prompt = (
-            f"You are a medical assistant analysing lab test results.\n\n"
-            f"Test Category: {test_category}\n\nAbnormal Parameters:\n{param_lines}\n\n"
-            "Provide a brief, easy-to-understand summary (2–3 sentences) and 3–5 specific "
-            "lifestyle recommendations. Also mention when the person should consult a doctor."
+            f"You are a medical assistant analysing lab test results.\n\nTest Category: {test_category}\n\nAbnormal Parameters:\n{param_lines}\n\n"
+            "Provide a brief, easy-to-understand summary (2–3 sentences) and 3–5 specific lifestyle recommendations. Also mention when the person should consult a doctor."
         )
 
         try:
@@ -297,37 +202,26 @@ class LabTestAnalyzer:
             return self._parse_ai_response(response.choices[0].message.content)
         except Exception as e:
             print(f"AI summary error: {e}")
-            return {
-                "summary":                   "Some values are outside the normal range. Please review the details above.",
-                "lifestyle_recommendations": [],
-                "when_to_consult_doctor":    ["Consult your doctor to discuss these abnormal results"],
-            }
+            return {"summary": "Some values are outside the normal range. Please review the details above.", "lifestyle_recommendations": [], "when_to_consult_doctor": ["Consult your doctor to discuss these abnormal results"]}
 
     @staticmethod
     def _parse_ai_response(text: str) -> Dict:
-        summary = []
-        recommendations = []
-        doctor_advice = []
+        summary, recommendations, doctor_advice = [], [], []
         section = "summary"
 
-        for raw_line in text.split("\n"):
-            line = raw_line.strip()
-            if not line:
-                continue
-
+        for line in (l.strip() for l in text.split("\n") if l.strip()):
             if "recommendation" in line.lower() or "lifestyle" in line.lower():
-                section = "recommendations"
-                continue
+                section = "recommendations"; continue
             if "doctor" in line.lower() or "consult" in line.lower():
-                section = "doctor"
-                continue
+                section = "doctor"; continue
 
+            clean = line.lstrip("-•0123456789. ")
             if section == "summary" and not line.startswith("-"):
                 summary.append(line)
-            elif section == "recommendations" and (line.startswith(("-", "•")) or (line and line[0].isdigit())):
-                recommendations.append(line.lstrip("-•0123456789. "))
+            elif section == "recommendations" and (line.startswith(("-", "•")) or line[0].isdigit()):
+                recommendations.append(clean)
             elif section == "doctor":
-                doctor_advice.append(line.lstrip("-•0123456789. "))
+                doctor_advice.append(clean)
 
         return {
             "summary":                   " ".join(summary) or "Please review the abnormal parameters above.",
@@ -337,9 +231,7 @@ class LabTestAnalyzer:
 
     @staticmethod
     def _trend_summary(param_name: str, history: List[Dict]) -> str:
-        first = history[0]["value"]
-        last = history[-1]["value"]
-
+        first, last = history[0]["value"], history[-1]["value"]
         if not isinstance(first, (int, float)) or not isinstance(last, (int, float)):
             return f"Trend available across {len(history)} records."
 
@@ -349,16 +241,14 @@ class LabTestAnalyzer:
         if abs(pct) < 2:
             return f"Stable: {param_name} is consistent at around {last}."
 
-        direction = "increasing" if diff > 0 else "decreasing"
-        magnitude = "significantly" if abs(pct) > 10 else "slightly"
-        s_first = history[0]["status"]
-        s_last = history[-1]["status"]
-
+        s_first, s_last = history[0]["status"], history[-1]["status"]
         if s_last == "normal" and s_first != "normal":
             return f"Improving: {param_name} has moved into the normal range."
         if s_last != "normal" and s_first == "normal":
             return f"Concerning: {param_name} has moved outside the normal range."
 
+        direction = "increasing" if diff > 0 else "decreasing"
+        magnitude = "significantly" if abs(pct) > 10 else "slightly"
         return f"{magnitude.capitalize()} {direction}: {param_name} changed by {abs(pct):.1f}% since the first record."
 
 

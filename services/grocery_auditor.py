@@ -18,12 +18,11 @@ class GroceryAuditor:
     def analyze_receipt_image(self, image_path: str, user_profile: Dict) -> Dict:
         if not os.path.exists(image_path):
             return {"status": "error", "message": "Image file not found."}
-
         if not self.groq_client:
             return {"status": "warning", "health_score": 60, "message": "AI Auditor unavailable. Buy more fresh fruits and vegetables."}
 
         conditions = ", ".join(user_profile.get("conditions", [])) or "None"
-        goals = ", ".join(user_profile.get("goals", [])) or "None"
+        goals      = ", ".join(user_profile.get("goals", [])) or "None"
 
         prompt = (
             "You are a professional nutrition auditor. Analyse the provided grocery receipt photo.\n\n"

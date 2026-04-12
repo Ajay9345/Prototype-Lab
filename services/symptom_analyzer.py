@@ -37,7 +37,7 @@ SYMPTOM_INDICATORS = [
     "vomit", "headache", "tired", "fatigue", "weak", "sore",
 ]
 
-SYMPTOM_CATEGORIES: Dict[str, List[str]] = {
+SYMPTOM_CATEGORIES = {
     "respiratory":      ["cough", "breathing", "breath", "chest", "lung", "throat", "wheeze"],
     "cardiovascular":   ["heart", "chest pain", "palpitation", "heartbeat", "blood pressure"],
     "gastrointestinal": ["stomach", "abdominal", "nausea", "vomit", "diarrhea", "constipation"],
@@ -47,108 +47,65 @@ SYMPTOM_CATEGORIES: Dict[str, List[str]] = {
     "general":          ["fever", "fatigue", "weakness", "tired", "pain", "ache"],
 }
 
-FOLLOW_UP_QUESTIONS: Dict[str, List[str]] = {
-    "high": [
-        "How long have you been experiencing these symptoms?",
-        "Are the symptoms getting worse?",
-        "Have you taken any medication for this?",
-    ],
-    "medium": [
-        "When did these symptoms start?",
-        "Have you experienced this before?",
-        "Are there any other symptoms you're experiencing?",
-    ],
-    "low": [
-        "How long have you had these symptoms?",
-        "Have you tried any home remedies?",
-        "Is there anything that makes it better or worse?",
-    ],
+FOLLOW_UP_QUESTIONS = {
+    "high":   ["How long have you been experiencing these symptoms?", "Are the symptoms getting worse?", "Have you taken any medication for this?"],
+    "medium": ["When did these symptoms start?", "Have you experienced this before?", "Are there any other symptoms you're experiencing?"],
+    "low":    ["How long have you had these symptoms?", "Have you tried any home remedies?", "Is there anything that makes it better or worse?"],
 }
 
-CATEGORY_QUESTIONS: Dict[str, str] = {
+CATEGORY_QUESTIONS = {
     "respiratory":      "Do you have any difficulty breathing or chest tightness?",
     "cardiovascular":   "Do you have any history of heart problems?",
     "gastrointestinal": "Have you noticed any changes in your diet recently?",
 }
 
-RECOMMENDATIONS: Dict[str, List[str]] = {
-    "emergency": [
-        "🚨 This appears to be a medical emergency. Call 108 immediately.",
-        "Do not delay seeking emergency medical care.",
-        "If possible, have someone stay with you until help arrives.",
-    ],
-    "high": [
-        "⚠️ These symptoms require medical attention. Please consult a doctor soon.",
-        "Consider visiting a nearby hospital or clinic within 24 hours.",
-        "Monitor your symptoms closely and seek immediate care if they worsen.",
-    ],
-    "medium": [
-        "📋 Schedule an appointment with your doctor if symptoms persist.",
-        "Keep track of your symptoms and any changes.",
-        "Rest and stay hydrated while monitoring your condition.",
-    ],
-    "low": [
-        "💡 These symptoms are typically mild and may resolve on their own.",
-        "Try rest, hydration, and over-the-counter remedies if appropriate.",
-        "Consult a doctor if symptoms persist for more than a few days.",
-    ],
+RECOMMENDATIONS = {
+    "emergency": ["🚨 This appears to be a medical emergency. Call 108 immediately.", "Do not delay seeking emergency medical care.", "If possible, have someone stay with you until help arrives."],
+    "high":      ["⚠️ These symptoms require medical attention. Please consult a doctor soon.", "Consider visiting a nearby hospital or clinic within 24 hours.", "Monitor your symptoms closely and seek immediate care if they worsen."],
+    "medium":    ["📋 Schedule an appointment with your doctor if symptoms persist.", "Keep track of your symptoms and any changes.", "Rest and stay hydrated while monitoring your condition."],
+    "low":       ["💡 These symptoms are typically mild and may resolve on their own.", "Try rest, hydration, and over-the-counter remedies if appropriate.", "Consult a doctor if symptoms persist for more than a few days."],
 }
 
 
 class SymptomAnalyzer:
     def analyze_message(self, message: str, user_profile: Optional[Dict] = None) -> Dict:
         msg = message.lower()
-
         if not self._has_symptoms(msg):
             return {"has_symptoms": False, "risk_level": "none", "symptoms": [], "is_emergency": False}
 
-        symptoms = self._extract_symptoms(msg)
         risk, is_emrg = self._assess_risk(msg, user_profile)
-        category = self._categorize(msg)
-
         return {
             "has_symptoms":        True,
-            "symptoms":            symptoms,
+            "symptoms":            self._extract_symptoms(msg),
             "risk_level":          risk,
             "is_emergency":        is_emrg,
-            "category":            category,
-            "follow_up_questions": self._follow_up_questions(risk, category),
-            "recommendations":     self._recommendations(risk, is_emrg),
+            "category":            self._categorize(msg),
+            "follow_up_questions": self._follow_up_questions(risk, self._categorize(msg)),
+            "recommendations":     RECOMMENDATIONS.get("emergency" if is_emrg else risk, RECOMMENDATIONS["low"]),
             "timestamp":           datetime.now().isoformat(),
         }
 
     def check_emergency(self, message: str) -> bool:
-        msg = message.lower()
-        return any(kw in msg for kw in EMERGENCY_KEYWORDS)
+        return any(kw in message.lower() for kw in EMERGENCY_KEYWORDS)
 
     def _has_symptoms(self, message: str) -> bool:
         return any(ind in message for ind in SYMPTOM_INDICATORS)
 
     def _extract_symptoms(self, message: str) -> List[str]:
-        all_keywords = EMERGENCY_KEYWORDS + HIGH_RISK_KEYWORDS + MEDIUM_RISK_KEYWORDS + LOW_RISK_KEYWORDS
-        return list({kw for kw in all_keywords if kw in message})
+        all_kw = EMERGENCY_KEYWORDS + HIGH_RISK_KEYWORDS + MEDIUM_RISK_KEYWORDS + LOW_RISK_KEYWORDS
+        return list({kw for kw in all_kw if kw in message})
 
     def _assess_risk(self, message: str, user_profile: Optional[Dict]) -> Tuple[str, bool]:
         if any(kw in message for kw in EMERGENCY_KEYWORDS):
             return ("high", True)
-
         if any(kw in message for kw in HIGH_RISK_KEYWORDS):
-            if user_profile:
-                age = user_profile.get("age") or 0
-                conditions = user_profile.get("conditions", [])
-                if age > 65 or conditions:
-                    return ("high", True)
-            return ("high", False)
-
+            age = (user_profile or {}).get("age") or 0
+            conditions = (user_profile or {}).get("conditions", [])
+            return ("high", bool(age > 65 or conditions))
         if any(kw in message for kw in MEDIUM_RISK_KEYWORDS):
-            severity_mods = ["severe", "intense", "persistent", "chronic"]
-            if any(mod in message for mod in severity_mods):
+            if any(m in message for m in ["severe", "intense", "persistent", "chronic"]):
                 return ("high", False)
             return ("medium", False)
-
-        if any(kw in message for kw in LOW_RISK_KEYWORDS):
-            return ("low", False)
-
         return ("low", False)
 
     def _categorize(self, message: str) -> str:
@@ -162,10 +119,6 @@ class SymptomAnalyzer:
         if category in CATEGORY_QUESTIONS:
             questions.append(CATEGORY_QUESTIONS[category])
         return questions[:3]
-
-    def _recommendations(self, risk_level: str, is_emergency: bool) -> List[str]:
-        key = "emergency" if is_emergency else risk_level
-        return RECOMMENDATIONS.get(key, RECOMMENDATIONS["low"])
 
 
 _instance: Optional[SymptomAnalyzer] = None

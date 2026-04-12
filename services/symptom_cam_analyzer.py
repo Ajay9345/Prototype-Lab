@@ -18,12 +18,8 @@ class SymptomCamAnalyzer:
     def analyze_symptom_image(self, image_path: str, symptoms_history: str = "") -> Dict:
         if not os.path.exists(image_path):
             return {"status": "error", "message": "Image file not found."}
-
         if not self.groq_client:
-            return {
-                "status":  "warning",
-                "message": "Vision Analysis Engine offline. Please describe your symptoms in text.",
-            }
+            return {"status": "warning", "message": "Vision Analysis Engine offline. Please describe your symptoms in text."}
 
         prompt = (
             "You are a specialised medical AI assistant. Analyse the provided symptom image "
@@ -57,11 +53,7 @@ class SymptomCamAnalyzer:
             }
         except Exception as e:
             print(f"Vision analysis error: {e}")
-            return {
-                "status":         "error",
-                "message":        f"Failed to analyse image: {e}",
-                "recommendation": "Please describe your symptoms to the chatbot instead.",
-            }
+            return {"status": "error", "message": f"Failed to analyse image: {e}", "recommendation": "Please describe your symptoms to the chatbot instead."}
 
 
 _instance: Optional[SymptomCamAnalyzer] = None

@@ -3,14 +3,7 @@ import requests
 from datetime import datetime
 from typing import Dict, List, Optional
 
-AQI_LEVELS = [
-    (50,  "Good"),
-    (100, "Moderate"),
-    (150, "Unhealthy for Sensitive Groups"),
-    (200, "Unhealthy"),
-    (300, "Very Unhealthy"),
-]
-
+AQI_LEVELS = [(50, "Good"), (100, "Moderate"), (150, "Unhealthy for Sensitive Groups"), (200, "Unhealthy"), (300, "Very Unhealthy")]
 MOCK_AQI = 145
 
 
@@ -19,68 +12,37 @@ class EnvironmentalSync:
         self.aqi_api_token = os.getenv("AQI_API_TOKEN")
 
     def get_environmental_data(self, lat: float, lon: float) -> Dict:
-        data = {
-            "aqi":         0,
-            "status":      "Unknown",
-            "temperature": 25,
-            "humidity":    50,
-            "pollutants":  {},
-            "timestamp":   datetime.now().isoformat(),
-        }
+        data = {"aqi": 0, "status": "Unknown", "temperature": 25, "humidity": 50, "pollutants": {}, "timestamp": datetime.now().isoformat()}
 
         if self.aqi_api_token:
             try:
-                url = f"https://api.waqi.info/feed/geo:{lat};{lon}/?token={self.aqi_api_token}"
-                response = requests.get(url, timeout=5).json()
-                if response.get("status") == "ok":
-                    aqi_val = response["data"]["aqi"]
-                    data["aqi"] = aqi_val
-                    data["status"] = self._aqi_label(aqi_val)
-                    data["pollutants"] = response["data"].get("iaqi", {})
+                resp = requests.get(f"https://api.waqi.info/feed/geo:{lat};{lon}/?token={self.aqi_api_token}", timeout=5).json()
+                if resp.get("status") == "ok":
+                    data["aqi"]       = resp["data"]["aqi"]
+                    data["status"]    = self._aqi_label(data["aqi"])
+                    data["pollutants"]= resp["data"].get("iaqi", {})
             except Exception as e:
                 print(f"AQI fetch error: {e}")
 
         if data["aqi"] == 0:
-            data["aqi"] = MOCK_AQI
-            data["status"] = self._aqi_label(MOCK_AQI)
-            data["is_mock"] = True
+            data.update({"aqi": MOCK_AQI, "status": self._aqi_label(MOCK_AQI), "is_mock": True})
 
         return data
 
     def generate_alerts(self, env_data: Dict, user_profile: Dict) -> List[Dict]:
-        alerts: List[Dict] = []
-        aqi = env_data.get("aqi", 0)
+        alerts = []
+        aqi        = env_data.get("aqi", 0)
         conditions = [c.lower() for c in user_profile.get("conditions", [])]
-        humidity = env_data.get("humidity", 50)
+        humidity   = env_data.get("humidity", 50)
 
         if aqi > 100:
-            respiratory_conditions = {"asthma", "copd", "bronchitis", "respiratory"}
-            if any(c in conditions for c in respiratory_conditions):
-                alerts.append({
-                    "type":    "high",
-                    "title":   "Air Quality Alert (Respiratory Risk)",
-                    "message": (
-                        f"AQI is {aqi} ({env_data['status']}). Given your respiratory history, "
-                        "please limit outdoor exposure today and keep your inhaler handy."
-                    ),
-                    "icon": "🌬️",
-                })
+            if any(c in conditions for c in {"asthma", "copd", "bronchitis", "respiratory"}):
+                alerts.append({"type": "high", "title": "Air Quality Alert (Respiratory Risk)", "message": f"AQI is {aqi} ({env_data['status']}). Given your respiratory history, please limit outdoor exposure today and keep your inhaler handy.", "icon": "🌬️"})
             elif aqi > 150:
-                alerts.append({
-                    "type":    "medium",
-                    "title":   "Poor Air Quality",
-                    "message": f"AQI has reached {aqi}. It is recommended to wear a mask outdoors today.",
-                    "icon":    "😷",
-                })
+                alerts.append({"type": "medium", "title": "Poor Air Quality", "message": f"AQI has reached {aqi}. It is recommended to wear a mask outdoors today.", "icon": "😷"})
 
-        joint_conditions = {"arthritis", "joint pain", "inflammation"}
-        if humidity > 80 and any(c in conditions for c in joint_conditions):
-            alerts.append({
-                "type":    "low",
-                "title":   "Joint Pain Precaution",
-                "message": "High humidity detected. This may trigger joint stiffness. Consider light stretching and staying warm.",
-                "icon":    "🦴",
-            })
+        if humidity > 80 and any(c in conditions for c in {"arthritis", "joint pain", "inflammation"}):
+            alerts.append({"type": "low", "title": "Joint Pain Precaution", "message": "High humidity detected. This may trigger joint stiffness. Consider light stretching and staying warm.", "icon": "🦴"})
 
         return alerts
 

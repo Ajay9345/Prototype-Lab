@@ -15,7 +15,7 @@ GENERAL_TIPS = [
     "👥 Stay connected with friends and family for emotional wellbeing.",
 ]
 
-AGE_TIPS: Dict[str, List[str]] = {
+AGE_TIPS = {
     "young_adult": [
         "🏋️ Build muscle mass now — it's easier in your 20s and 30s!",
         "💪 Focus on building healthy habits that will last a lifetime.",
@@ -36,7 +36,7 @@ AGE_TIPS: Dict[str, List[str]] = {
     ],
 }
 
-CONDITION_TIPS: Dict[str, List[str]] = {
+CONDITION_TIPS = {
     "diabetes": [
         "📊 Monitor your blood sugar levels regularly.",
         "🍽️ Eat small, frequent meals to maintain stable blood sugar.",
@@ -63,7 +63,7 @@ CONDITION_TIPS: Dict[str, List[str]] = {
     ],
 }
 
-GOAL_TIPS: Dict[str, List[str]] = {
+GOAL_TIPS = {
     "weight loss": [
         "📝 Keep a food diary to track your eating habits.",
         "🍽️ Use smaller plates to control portion sizes.",
@@ -90,7 +90,7 @@ GOAL_TIPS: Dict[str, List[str]] = {
     ],
 }
 
-SEASONAL_TIPS: Dict[str, List[str]] = {
+SEASONAL_TIPS = {
     "summer": [
         "☀️ Wear sunscreen with SPF 30+ when outdoors.",
         "💧 Increase water intake to prevent dehydration.",
@@ -111,7 +111,7 @@ SEASONAL_TIPS: Dict[str, List[str]] = {
     ],
 }
 
-SELF_CARE_TIPS: Dict[str, List[str]] = {
+SELF_CARE_TIPS = {
     "respiratory": [
         "💨 Use a humidifier to ease breathing.",
         "🍯 Try honey and warm water for throat relief.",
@@ -152,29 +152,20 @@ class WellnessGuide:
         if not user_profile:
             return random.sample(GENERAL_TIPS, min(count, len(GENERAL_TIPS)))
 
-        tips: List[str] = []
-
-        age = user_profile.get("age")
-        if age:
-            category = self._age_category(age)
-            tips.extend(AGE_TIPS.get(category, []))
-
-        for condition in user_profile.get("conditions", []):
-            cond_lower = condition.lower()
-            for key, cond_tips in CONDITION_TIPS.items():
-                if key in cond_lower:
-                    tips.extend(cond_tips)
-
+        tips = []
+        if age := user_profile.get("age"):
+            tips.extend(AGE_TIPS.get(self._age_category(age), []))
+        for cond in user_profile.get("conditions", []):
+            for key, t in CONDITION_TIPS.items():
+                if key in cond.lower():
+                    tips.extend(t)
         for goal in user_profile.get("goals", []):
-            goal_lower = goal.lower()
-            for key, goal_tips in GOAL_TIPS.items():
-                if key in goal_lower or any(w in goal_lower for w in key.split()):
-                    tips.extend(goal_tips)
-
+            for key, t in GOAL_TIPS.items():
+                if key in goal.lower() or any(w in goal.lower() for w in key.split()):
+                    tips.extend(t)
         tips.extend(SEASONAL_TIPS.get(self._current_season(), []))
         tips.extend(GENERAL_TIPS)
-        unique_tips = list(dict.fromkeys(tips))
-        return unique_tips[:count]
+        return list(dict.fromkeys(tips))[:count]
 
     def get_daily_wellness_tip(self, user_profile: Optional[Dict] = None) -> str:
         tips = self.get_personalized_tips(user_profile, count=1)
@@ -184,82 +175,36 @@ class WellnessGuide:
         if not user_profile:
             return []
 
-        alerts: List[Dict] = []
-
+        alerts = []
         if env_data:
             from services.environmental_sync import get_environmental_sync
             alerts.extend(get_environmental_sync().generate_alerts(env_data, user_profile))
 
-        medications = user_profile.get("medications", [])
-        if medications:
-            alerts.append({
-                "type":     "medication",
-                "priority": "high",
-                "message":  f"💊 Remember to take your medications: {', '.join(medications)}",
-                "action":   "Set a daily reminder",
-            })
+        if meds := user_profile.get("medications"):
+            alerts.append({"type": "medication", "priority": "high",   "message": f"💊 Remember to take your medications: {', '.join(meds)}", "action": "Set a daily reminder"})
+        if goals := user_profile.get("goals"):
+            alerts.append({"type": "goal",       "priority": "medium", "message": f"🎯 Stay focused on your health goals: {', '.join(goals)}", "action": "Track your progress"})
+        if (age := user_profile.get("age")) and age > 40:
+            alerts.append({"type": "checkup",    "priority": "medium", "message": "👨‍⚕️ Schedule your annual health check-up if you haven't already.", "action": "Book an appointment"})
+        if conditions := user_profile.get("conditions"):
+            alerts.append({"type": "monitoring", "priority": "high",   "message": f"📊 Monitor your {', '.join(conditions)} regularly and track any changes.", "action": "Keep a health journal"})
 
-        goals = user_profile.get("goals", [])
-        if goals:
-            alerts.append({
-                "type":     "goal",
-                "priority": "medium",
-                "message":  f"🎯 Stay focused on your health goals: {', '.join(goals)}",
-                "action":   "Track your progress",
-            })
-
-        age = user_profile.get("age")
-        if age and age > 40:
-            alerts.append({
-                "type":     "checkup",
-                "priority": "medium",
-                "message":  "👨‍⚕️ Schedule your annual health check-up if you haven't already.",
-                "action":   "Book an appointment",
-            })
-
-        conditions = user_profile.get("conditions", [])
-        if conditions:
-            alerts.append({
-                "type":     "monitoring",
-                "priority": "high",
-                "message":  f"📊 Monitor your {', '.join(conditions)} regularly and track any changes.",
-                "action":   "Keep a health journal",
-            })
-
-        alerts.append({
-            "type":     "hydration",
-            "priority": "low",
-            "message":  "💧 Have you had enough water today? Aim for 8 glasses!",
-            "action":   "Drink a glass of water now",
-        })
-
+        alerts.append({"type": "hydration", "priority": "low", "message": "💧 Have you had enough water today? Aim for 8 glasses!", "action": "Drink a glass of water now"})
         return alerts
 
     def get_self_care_recommendations(self, symptom_category: Optional[str] = None, risk_level: Optional[str] = None) -> List[str]:
         if risk_level == "high":
-            return [
-                "⚠️ These symptoms require medical attention. Please consult a doctor.",
-                "Do not rely solely on self-care for serious symptoms.",
-            ]
-        tips = SELF_CARE_TIPS.get(symptom_category or "", [])
-        return tips if tips else GENERAL_SELF_CARE
+            return ["⚠️ These symptoms require medical attention. Please consult a doctor.", "Do not rely solely on self-care for serious symptoms."]
+        return SELF_CARE_TIPS.get(symptom_category or "", GENERAL_SELF_CARE)
 
     @staticmethod
     def _age_category(age: int) -> str:
-        if age < 36:
-            return "young_adult"
-        if age < 61:
-            return "middle_age"
-        return "senior"
+        return "young_adult" if age < 36 else "middle_age" if age < 61 else "senior"
 
     @staticmethod
     def _current_season() -> str:
         month = datetime.now().month
-        if month in [3, 4, 5, 6]:
-            return "summer"
-        if month in [7, 8, 9]:
-            return "monsoon"
-        return "winter"
+        return "summer" if month in [3, 4, 5, 6] else "monsoon" if month in [7, 8, 9] else "winter"
 
 
 _instance: Optional[WellnessGuide] = None

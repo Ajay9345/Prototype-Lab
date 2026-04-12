@@ -148,6 +148,12 @@
         "message": "tell about my prescription",
         "response": "## Introduction\nI've reviewed your **health profile** and previous conversations. \n\n## Prescription Details\nRegarding your prescription, I found the following information:\n* **Prescription 1**:\n\t+ Date: 05/05/1947 (please note that this date seems to be incorrect, as it's likely a typographical error)\n\t+ Medications:\n\t\t- Morphine 130 mg/24 hours oral capsule, extended release\n\t\t- OxyCodone oral 10 mg tablet\n\t+ Start Date: 04/13/2015\n\t+ SIG: 130 mg = 1 cap Oral Daily\n\t+ Dispense/Supply: 30 (thirty) cap\n\n## Important Considerations\nAs you have **diabetes** and **hypertension**, it's crucial to consider how these medications may interact with your current conditions and medications, **metformin** and **paracetamol**. \n\n## Next Steps\nPlease consult with your doctor to discuss any potential interactions between your current medications and the medications listed in your prescription. It's essential to follow your doctor's instructions and take your medications as prescribed.\n\n## Additional Concerns\nIf you have any questions or concerns about your prescription or any other symptoms, don't hesitate to reach out to your doctor or a medical professional for guidance. **Please prioritize your health and safety**.",
         "topic": "Medications"
+      },
+      {
+        "timestamp": "2026-04-12T11:38:50.721194",
+        "message": "hi",
+        "response": "## Introduction\nHello. I'm here to help you with any questions or concerns you may have. \n\n## Considering Your Health Profile\nI've taken note of your **health profile**, which includes **diabetes**, **hypertension**, and a **peanut allergy**. You're also currently taking **metformin** and **paracetamol**. Your **health goals** are to gain weight and improve your sleep.\n\n## Previous Conversations\nWe've previously discussed your **fever**, **cough**, and **cold**. I've advised you to consult with your doctor to manage your symptoms and to discuss any potential interactions between your current medications and the medications listed in your prescription.\n\n## Next Steps\nIf you have any specific questions or concerns, please feel free to ask, and I'll do my best to provide you with helpful and empathetic responses. **Please prioritize your health and safety**. \n\nWhat's on your mind today?",
+        "topic": "General Health"
       }
     ],
     "prescriptions": [
